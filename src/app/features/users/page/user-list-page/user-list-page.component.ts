@@ -73,7 +73,7 @@ export class UserListPageComponent implements OnInit {
     const queryParams = { ...this.filter };
 
     if(this.filter.type && this.filter.type !== '') {
-      queryParams.type = this.filter.type.value;
+      queryParams.type = this.filter.type.value || this.filter.type;
     }
 
     this.reloadRouteWithParams(queryParams);

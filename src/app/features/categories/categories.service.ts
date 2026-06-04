@@ -19,7 +19,7 @@ export class CategoriesService {
         return this.http.get<Page<CategoryModel>>(`${this.url}`, { params });
     }
 
-    getOne(categoryId: number): Observable<CategoryModel> {
+    getOne(categoryId: string): Observable<CategoryModel> {
         return this.http.get<CategoryModel>(`${this.url}/${categoryId}`);
     }
 
@@ -27,7 +27,7 @@ export class CategoriesService {
         return this.http.post<CategoryModel>(`${this.url}`, categoryInput);
     }
 
-    update(categoryId: number, categoryInput: CategoryInput): Observable<CategoryModel> {
+    update(categoryId: string, categoryInput: CategoryInput): Observable<CategoryModel> {
         return this.http.put<CategoryModel>(`${this.url}/${categoryId}`, categoryInput)
     }
 }

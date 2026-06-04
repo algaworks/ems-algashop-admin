@@ -31,6 +31,7 @@
                 <tr>
                     <th pSortableColumn="name">Name<p-sortIcon field="name"></p-sortIcon></th>
                     <th pSortableColumn="email">Email<p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="enabled">Enabled<p-sortIcon field="enabled"></p-sortIcon></th>
                     <th pSortableColumn="type">Type<p-sortIcon field="type"></p-sortIcon></th>
                     <th pSortableColumn="createdAt">Created<p-sortIcon field="createdAt"></p-sortIcon></th>
                     <th pSortableColumn="updatedAt">Updated<p-sortIcon field="updatedAt"></p-sortIcon></th>
@@ -48,6 +49,9 @@
                         {{user.email}}
                     </td>
                     <td>
+                        {{user.enabled ? 'Yes' : 'No'}}
+                    </td>
+                    <td>
                         {{enumToValue(user.type)}}
                     </td>
                      <td>
@@ -60,7 +64,7 @@
             </ng-template>
             <ng-template pTemplate="emptymessage" let-columns>
                 <tr>
-                    <td [attr.colspan]="5" style="text-align: center; padding: 1em;">
+                    <td [attr.colspan]="6" style="text-align: center; padding: 1em;">
                       No results were found for this search.
                     </td>
                 </tr>

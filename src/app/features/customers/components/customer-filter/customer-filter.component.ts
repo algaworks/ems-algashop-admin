@@ -25,17 +25,17 @@ export class CustomerFilterComponent implements OnInit{
 
   private configureForm() {
     this.form = new FormGroup({
+      firstName: new FormControl(''),
       email: new FormControl(''),
-      document: new FormControl('')
     }) as CustomerInputFormGroup;
   }
 
   private loadFilterState() {
+    if(this.appliedFilter.firstName){
+      this.form!.controls.firstName.setValue(this.appliedFilter.firstName);
+    }
     if(this.appliedFilter.email){
       this.form!.controls.email.setValue(this.appliedFilter.email);
-    }
-    if(this.appliedFilter.document){
-      this.form!.controls.document.setValue(this.appliedFilter.document);
     }
   }
 
@@ -47,11 +47,11 @@ export class CustomerFilterComponent implements OnInit{
   private generateFilter() : CustomerFilter {
 
     const customerFilter: CustomerFilter = new CustomerFilter();
+    if(this.form!.controls.firstName.value){
+      customerFilter.firstName = this.form!.controls.firstName.value;
+    }
     if(this.form!.controls.email.value){
       customerFilter.email = this.form!.controls.email.value;
-    }
-    if(this.form!.controls.document.value){
-      customerFilter.document = this.form!.controls.document.value;
     }
 
     return customerFilter;

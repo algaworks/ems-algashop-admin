@@ -49,6 +49,11 @@
                         </li>
                         <li>
                             <app-label-with-default
+                                label="Enabled:" [value]="user?.enabled ? 'Yes' : 'No'">
+                            </app-label-with-default>
+                        </li>
+                        <li>
+                            <app-label-with-default
                                 label="Id:" [value]="user?.id">
                             </app-label-with-default>
                         </li>

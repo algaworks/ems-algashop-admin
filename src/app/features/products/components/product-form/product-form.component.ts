@@ -8,8 +8,8 @@ import { CategoryModel, ProductInput, ProductModel } from 'src/app/core/models';
 import { ProductsService } from '../../products.service';
 import { firstValueFrom } from 'rxjs';
 
-type ProductInputControls = { [key in keyof ProductInput]: AbstractControl}
-type ProductInputFormGroup = FormGroup & {value: ProductInput, control: ProductInputControls}
+type ProductInputControls = { [key: string]: AbstractControl}
+type ProductInputFormGroup = FormGroup & {value: ProductInput, controls: ProductInputControls}
 
 @Component({
   selector: 'app-product-form',
@@ -18,9 +18,10 @@ type ProductInputFormGroup = FormGroup & {value: ProductInput, control: ProductI
 })
 export class ProductFormComponent implements OnInit {
   form?: ProductInputFormGroup;
-  @Input() productId?: number;
+  @Input() productId?: string;
   saving = false;
   categories: CategoryModel[] = [];
+  private currentQuantityInStock = 0;
 
   constructor(
     private productsService: ProductsService,
@@ -46,6 +47,7 @@ export class ProductFormComponent implements OnInit {
 
     if (this.isEditing()) {
         firstValueFrom(this.productsService.update(this.productId!, input))
+          .then(() => this.adjustStock(this.productId!, this.currentQuantityInStock, this.form!.controls.quantityInStock.value || 0))
           .then(() => {
             this.saving = false;
             this.displaySuccessMessage();
@@ -57,6 +59,7 @@ export class ProductFormComponent implements OnInit {
           })
     } else {
       firstValueFrom(this.productsService.create(input))
+        .then((product) => this.adjustStock(product.id, 0, this.form!.controls.quantityInStock.value || 0).then(() => product))
         .then((product) => {
           this.saving = false;
           this.displaySuccessMessage();
@@ -102,13 +105,13 @@ export class ProductFormComponent implements OnInit {
   }
 
   private parsePatchData(product: ProductModel) {
+    this.currentQuantityInStock = product.quantityInStock || 0;
     return product; //todo - caso tenha Enums, é bom usar um parse nesse método
   }
 
   private generateInput() : ProductInput {
     return new ProductInput(
       this.form!.controls.name.value,
-      this.form!.controls.quantityInStock.value,
       this.form!.controls.brand.value,
       this.form!.controls.enabled.value,
       this.form!.controls.regularPrice.value,
@@ -116,6 +119,17 @@ export class ProductFormComponent implements OnInit {
       this.form!.controls.description.value,
       this.form!.controls.category?.value?.id,
     );
+  }
+
+  private adjustStock(productId: string, currentQuantity: number, newQuantity: number): Promise<void> {
+    const difference = Number(newQuantity || 0) - Number(currentQuantity || 0);
+    if (difference > 0) {
+      return firstValueFrom(this.productsService.restock(productId, difference));
+    }
+    if (difference < 0) {
+      return firstValueFrom(this.productsService.withdraw(productId, Math.abs(difference)));
+    }
+    return Promise.resolve();
   }
 
   private displaySuccessMessage() {

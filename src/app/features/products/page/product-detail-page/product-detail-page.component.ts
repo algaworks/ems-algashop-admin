@@ -17,7 +17,7 @@ import { ProductAddImageFormComponent } from '../../components/product-add-image
 export class ProductDetailPageComponent implements OnInit {
   product?: ProductModel;
   images: ImageModel[] = [];
-  productId?: number;
+  productId?: string;
   loading = true;
   menuItems: MenuItem[] = [];
   ref?: DynamicDialogRef;
@@ -93,7 +93,7 @@ export class ProductDetailPageComponent implements OnInit {
     }
   }
 
-  makeImagePrimary(event: Event, imageId: number) {
+  makeImagePrimary(event: Event, imageId: string) {
       this.confirmationService.confirm({
         target: event.target as EventTarget,
         message: 'Are you sure you want to set this image as the main image of the product?',
@@ -116,7 +116,7 @@ export class ProductDetailPageComponent implements OnInit {
     });
   }
 
-  deleteImage(event: Event, imageId: number) {
+  deleteImage(event: Event, imageId: string) {
       this.confirmationService.confirm({
         target: event.target as EventTarget,
         message: 'Are you sure you want to delete this image? This is an irreversible process!',

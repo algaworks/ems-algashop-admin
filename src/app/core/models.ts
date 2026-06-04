@@ -5,8 +5,42 @@ export interface Page<T> {
     totalElements: number;
     totalPages: number;
     size: number;
-    page: number;
+    number: number;
 }
+
+export function applySortParams(
+    params: HttpParams,
+    sort?: string,
+    sortPropertyMap?: Record<string, string>
+): HttpParams {
+    if (!sort) {
+        return params;
+    }
+
+    const [rawProperty, rawDirection = 'ASC'] = sort.split(',');
+    const property = rawProperty?.trim();
+    if (!property) {
+        return params;
+    }
+
+    const mappedProperty = sortPropertyMap ? sortPropertyMap[property] : property;
+    if (!mappedProperty) {
+        return params;
+    }
+
+    const direction = rawDirection.trim().toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+    return params
+            .set('sortByProperty', mappedProperty)
+            .set('sortDirection', direction);
+}
+
+const PRODUCT_SORT_PROPERTIES: Record<string, string> = {
+    ADDED_AT: 'ADDED_AT',
+    addedAt: 'ADDED_AT',
+    SALE_PRICE: 'SALE_PRICE',
+    salePrice: 'SALE_PRICE',
+};
 
 export class PageRequest {
     constructor(
@@ -51,17 +85,18 @@ export class ProductFilter {
     direction?: string;
     page: number = 0;
     size: number = 10;
-    sort: string = 'name,ASC';
+    sort: string = 'ADDED_AT,ASC';
 
     enabled?: boolean;
     inventoryStatus?: string;
+    inStock?: boolean;
     hasDiscount?: boolean;
     term?: string;
     categoriesId?: string[];
     priceFrom?: number;
     priceTo?: number;
-    createdAtFrom?: string;
-    createdAtTo?: string;
+    addedAtFrom?: string;
+    addedAtTo?: string;
 
     constructor(data?: {}) {
       // this.applyParams(data);
@@ -113,31 +148,37 @@ export class ProductFilter {
         if(this.term) {
             params = params.set('term', this.term);
         }
-        if(this.sort) {
-            params = params.set('sort', this.sort);
-        }
-        if(this.enabled) {
+        if(this.enabled !== undefined && this.enabled !== null) {
           params = params.set('enabled', this.enabled);
         }
-        if(this.hasDiscount) {
+        if(this.inStock !== undefined && this.inStock !== null) {
+          params = params.set('inStock', this.inStock);
+        }
+        if(this.hasDiscount !== undefined && this.hasDiscount !== null) {
           params = params.set('hasDiscount', this.hasDiscount);
         }
-        if(this.priceFrom) {
+        if(this.priceFrom !== undefined && this.priceFrom !== null) {
           params = params.set('priceFrom', this.priceFrom);
         }
-        if(this.priceTo) {
+        if(this.priceTo !== undefined && this.priceTo !== null) {
           params = params.set('priceTo', this.priceTo);
         }
         if(this.categoriesId) {
           params = params.set('categoriesId', this.categoriesId.join(","));
         }
+        if(this.addedAtFrom) {
+          params = params.set('addedAtFrom', this.addedAtFrom);
+        }
+        if(this.addedAtTo) {
+          params = params.set('addedAtTo', this.addedAtTo);
+        }
 
-        return params;
+        return applySortParams(params, this.sort, PRODUCT_SORT_PROPERTIES);
     }
 }
 
 export interface ProductModel {
-    id: number;
+    id: string;
     name: string;
     brand: string;
     enabled: boolean;
@@ -159,7 +200,7 @@ export interface ProductModel {
 }
 
 export interface ImageModel {
-    id: number;
+    id: string;
     url: string;
 }
 
@@ -177,27 +218,41 @@ export enum ProductInventoryStatus {
 export class ProductInput {
     constructor(
         public name: string,
-        public quantityInStock: number,
         public brand: string,
         public enabled: boolean,
         public regularPrice: number,
         public salePrice: number,
         public description: string,
-        public categoryId: number
+        public categoryId: string
     ) {}
 }
 
 export class UploadRequestInput {
     constructor(
-      public fileName: string,
+      public originalFileName: string,
       public contentLength: number
     ) {}
 }
 
 export class UploadRequestInputResult {
     constructor(
+      public remoteFileName: string,
+      public contentLength: number,
+      public contentType: string,
       public uploadSignedUrl: string,
-      public imageId: number
+      public expiresAt: string
+    ) {}
+}
+
+export class ImageInput {
+    constructor(
+        public remoteFileName: string
+    ) {}
+}
+
+export class ProductQuantityInput {
+    constructor(
+        public quantity: number
     ) {}
 }
 

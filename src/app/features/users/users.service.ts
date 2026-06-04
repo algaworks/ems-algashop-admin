@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Page } from 'src/app/core/models';
 import { Observable } from 'rxjs';
-import { UserFilter, UserInput, UserModel } from './models/model';
+import { UserFilter, UserInput, UserModel, UserUpdateInput } from './models/model';
 
 @Injectable({
     providedIn: 'root'
@@ -28,7 +28,7 @@ export class UsersService {
         return this.http.post<UserModel>(`${this.url}`, userInput);
     }
 
-    update(userId: string, userInput: UserInput): Observable<UserModel> {
+    update(userId: string, userInput: UserUpdateInput): Observable<UserModel> {
         return this.http.put<UserModel>(`${this.url}/${userId}`, userInput)
     }
 

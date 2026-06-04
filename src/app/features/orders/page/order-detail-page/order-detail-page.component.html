@@ -26,7 +26,7 @@
                         <ul class="aw-card-label-group aw-card-label-group-md">
                             <li>
                                 <app-label-with-default
-                                    label="Customer:" [value]="order?.shipping?.fullName">
+                                    label="Customer:" [value]="(order?.customer?.firstName || '') + ' ' + (order?.customer?.lastName || '')">
                                 </app-label-with-default>
                             </li>
                             <li>
@@ -55,7 +55,7 @@
                         <ul class="aw-card-label-group aw-card-label-group-md">
                             <li>
                                 <app-label-with-default
-                                    label="Updated at:" [value]="order?.updatedAt | date">
+                                    label="Ready at:" [value]="order?.readyAt | date">
                                 </app-label-with-default>
                             </li>
                             <li>
@@ -70,7 +70,7 @@
                             </li>
                             <li>
                                 <app-label-with-default
-                                    label="Refunded at:" [value]="order?.refundedAt | date">
+                                    label="Credit card:" [value]="order?.creditCardId">
                                 </app-label-with-default>
                             </li>
                         </ul>
@@ -90,17 +90,27 @@
                     <ul class="aw-card-label-group aw-card-label-group-md">
                         <li>
                           <app-label-with-default
-                              label="Shipping name:" [value]="order?.shipping?.fullName">
+                              label="Shipping name:" [value]="(order?.shipping?.recipient?.firstName || '') + ' ' + (order?.shipping?.recipient?.lastName || '')">
                           </app-label-with-default>
                       </li>
                       <li>
                           <app-label-with-default
-                              label="Shipping document:" [value]="order?.shipping?.document">
+                              label="Shipping document:" [value]="order?.shipping?.recipient?.document">
                           </app-label-with-default>
                       </li>
                       <li>
                           <app-label-with-default
-                              label="Shipping phone:" [value]="order?.shipping?.phone">
+                              label="Shipping phone:" [value]="order?.shipping?.recipient?.phone">
+                          </app-label-with-default>
+                      </li>
+                      <li>
+                          <app-label-with-default
+                              label="Shipping cost:" [value]="order?.shipping?.cost | currency: 'USD'">
+                          </app-label-with-default>
+                      </li>
+                      <li>
+                          <app-label-with-default
+                              label="Expected date:" [value]="order?.shipping?.expectedDate | date">
                           </app-label-with-default>
                       </li>
                       <li>
@@ -144,7 +154,12 @@
                 <ul class="aw-card-label-group aw-card-label-group-md">
                     <li>
                         <app-label-with-default
-                            label="Billing name:" [value]="order?.billing?.fullName">
+                            label="Billing name:" [value]="(order?.billing?.firstName || '') + ' ' + (order?.billing?.lastName || '')">
+                        </app-label-with-default>
+                    </li>
+                    <li>
+                        <app-label-with-default
+                            label="Billing Email:" [value]="order?.billing?.email">
                         </app-label-with-default>
                     </li>
                     <li>
@@ -195,7 +210,78 @@
                 </ul>
             </p-tabPanel>
             <p-tabPanel header="Invoice">
-
+                <div class="aw-detail-card-body" *ngIf="loadingInvoice">
+                    <ul class="aw-card-label-group aw-card-label-group-xss">
+                        <li>
+                            <p-skeleton width="30rem" styleClass="p-mb-2"></p-skeleton>
+                        </li>
+                    </ul>
+                </div>
+                <div class="aw-detail-card-body" *ngIf="!loadingInvoice && invoiceNotFound">
+                    <app-label-with-default
+                        label="Invoice:" value="No invoice registered for this order.">
+                    </app-label-with-default>
+                </div>
+                <div *ngIf="!loadingInvoice && invoice">
+                    <div class="aw-flex-card-body">
+                        <div style="width: 340px;">
+                            <ul class="aw-card-label-group aw-card-label-group-md">
+                                <li>
+                                    <app-label-with-default label="Invoice id:" [value]="invoice.id"></app-label-with-default>
+                                </li>
+                                <li>
+                                    <app-label-with-default label="Status:" [value]="invoice.status"></app-label-with-default>
+                                </li>
+                                <li>
+                                    <app-label-with-default label="Total amount:" [value]="invoice.totalAmount | currency: 'USD'"></app-label-with-default>
+                                </li>
+                                <li>
+                                    <app-label-with-default label="Issued at:" [value]="invoice.issuedAt | date"></app-label-with-default>
+                                </li>
+                                <li>
+                                    <app-label-with-default label="Expires at:" [value]="invoice.expiresAt | date"></app-label-with-default>
+                                </li>
+                            </ul>
+                        </div>
+                        <div style="width: 340px;">
+                            <ul class="aw-card-label-group aw-card-label-group-md">
+                                <li>
+                                    <app-label-with-default label="Payer:" [value]="invoice.payer.fullName"></app-label-with-default>
+                                </li>
+                                <li>
+                                    <app-label-with-default label="Payer email:" [value]="invoice.payer.email"></app-label-with-default>
+                                </li>
+                                <li>
+                                    <app-label-with-default label="Payment method:" [value]="enumInvoicePaymentMethodToValue(invoice.paymentSettings?.method)"></app-label-with-default>
+                                </li>
+                                <li>
+                                    <app-label-with-default label="Gateway code:" [value]="invoice.paymentSettings?.gatewayCode"></app-label-with-default>
+                                </li>
+                                <li>
+                                    <app-label-with-default label="Paid at:" [value]="invoice.paidAt | date"></app-label-with-default>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p-table [value]="invoice.items"
+                             styleClass="p-datatable-sm p-card"
+                             [paginator]="false">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th>Number</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-item>
+                            <tr>
+                                <td>{{item.number}}</td>
+                                <td>{{item.name}}</td>
+                                <td>{{item.amount | currency: 'USD'}}</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
             </p-tabPanel>
         </p-tabView>
     </div>
@@ -215,8 +301,8 @@
                 [loading]="loading">
         <ng-template pTemplate="header">
             <tr>
-                <th pSortableColumn="name">Name<p-sortIcon field="name"></p-sortIcon></th>
-                <th pSortableColumn="salePrice">Price<p-sortIcon field="salePrice"></p-sortIcon></th>
+                <th pSortableColumn="productName">Name<p-sortIcon field="productName"></p-sortIcon></th>
+                <th pSortableColumn="price">Price<p-sortIcon field="price"></p-sortIcon></th>
                 <th pSortableColumn="quantity">Quantity<p-sortIcon field="quantity"></p-sortIcon></th>
                 <th pSortableColumn="totalAmount">Total amount<p-sortIcon field="totalAmount"></p-sortIcon></th>
             </tr>
@@ -224,7 +310,7 @@
         <ng-template pTemplate="body" let-item>
             <tr>
                 <td>
-                    {{item.name}}
+                    {{item.productName}}
                 </td>
                 <td>
                     {{item.price | currency: 'USD'}}

@@ -1,14 +1,16 @@
 import { HttpParams } from "@angular/common/http";
+import { applySortParams } from "src/app/core/models";
 
 export interface UserModel {
-  id: number;
+  id: string;
   name: string;
   email: string;
+  enabled: boolean;
   type: UserType;
 
   //read only
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export class UserFilter {
@@ -58,10 +60,6 @@ export class UserFilter {
           .set('page', this.page)
           .set('size', this.size);
 
-      if(this.sort) {
-          params = params.set('sort', this.sort);
-      }
-
       if(this.email){
         params = params.set('email', this.email);
       }
@@ -70,7 +68,7 @@ export class UserFilter {
         params = params.set('type', this.type);
       }
 
-      return params;
+      return applySortParams(params, this.sort);
   }
 }
 
@@ -82,7 +80,15 @@ export class UserInput {
   ) {}
 }
 
+export class UserUpdateInput {
+  constructor(
+      public name: string,
+      public type: UserType,
+      public enabled: boolean
+  ) {}
+}
+
 export enum UserType {
   MANAGER = "Manager",
-  CUSTOMER = "Customer",
+  OPERATOR = "Operator",
 }

@@ -5,7 +5,7 @@ import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { ProductsService } from '../../products.service';
 import { FileBeforeUploadEvent, FileSelectEvent, FileUploadErrorEvent, FileUploadEvent, FileUploadHandlerEvent } from 'primeng/fileupload';
 import { ImageUploadService } from '../../image-upload.service';
-import { UploadRequestInput as PresignedRequest, UploadRequestInputResult } from 'src/app/core/models';
+import { ImageInput, UploadRequestInput as PresignedRequest } from 'src/app/core/models';
 import { catchError, concatMap, firstValueFrom, tap, throwError } from 'rxjs';
 
 @Component({
@@ -14,7 +14,7 @@ import { catchError, concatMap, firstValueFrom, tap, throwError } from 'rxjs';
   styleUrl: './product-add-image-form.component.css'
 })
 export class ProductAddImageFormComponent implements OnInit {
-  productId?: number;
+  productId?: string;
   form?: FormGroup;
   contentTypes = 'image/png,image/jpeg';
   selectedFile?: any;
@@ -55,10 +55,10 @@ export class ProductAddImageFormComponent implements OnInit {
     this.saving = true;
 
     firstValueFrom(
-      this.productsService.requestUpload(this.productId!, presignedRequest)
+      this.productsService.requestUpload(presignedRequest)
         .pipe(
           concatMap(response => this.imageUploadService.upload(file, response.uploadSignedUrl)
-            .pipe(concatMap(() => this.productsService.addImageToProduct(this.productId!, response.imageId)))
+            .pipe(concatMap(() => this.productsService.addImageToProduct(this.productId!, new ImageInput(response.remoteFileName))))
           ),
           catchError(error => {
             return throwError(() => error);

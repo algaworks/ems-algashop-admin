@@ -19,7 +19,7 @@
                 <ul class="aw-card-label-group aw-card-label-group-md">
                     <li>
                         <app-label-with-default
-                            label="Name:" [value]="customer?.fullName">
+                            label="Name:" [value]="(customer?.firstName || '') + ' ' + (customer?.lastName || '')">
                         </app-label-with-default>
                     </li>
                     <li>
@@ -45,7 +45,7 @@
 
                     <li>
                       <app-label-with-default label="Promotion notifications:">
-                        <app-customer-promotion-notification-badge [allowPromotionNotifications]="customer?.allowPromotionNotifications"/>
+                        <app-customer-promotion-notification-badge [allowPromotionNotifications]="customer?.promotionNotificationsAllowed"/>
                       </app-label-with-default>
                     </li>
                 </ul>

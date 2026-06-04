@@ -15,7 +15,7 @@ import { CategoryModel } from '../../models/models';
 })
 export class CategoryDetailPageComponent implements OnInit {
   category?: CategoryModel;
-  categoryId?: number;
+  categoryId?: string;
   loading = true;
   menuItems: MenuItem[] = [];
 

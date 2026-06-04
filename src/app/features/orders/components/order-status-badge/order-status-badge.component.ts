@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { OrderStatus } from '../../models/model';
-import { enumToString, stringToEnum } from 'src/app/shared/shared.module';
+import { enumToString } from 'src/app/shared/shared.module';
 
 
 @Component({
@@ -20,10 +20,10 @@ export class OrderStatusBadgeComponent {
     switch (enumToString(OrderStatus, this.status!)) {
       case OrderStatus.PAID:
         return 'status-success';
-      case OrderStatus.REFUNDED:
-        return 'status-danger';
       case OrderStatus.CANCELED:
         return 'status-danger';
+      case OrderStatus.READY:
+        return 'status-success';
       default:
         return 'status-info';
     }

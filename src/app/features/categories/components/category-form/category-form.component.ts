@@ -16,7 +16,7 @@ type CategoryInputFormGroup = FormGroup & {value: CategoryInput, control: Catego
 })
 export class CategoryFormComponent implements OnInit {
   form?: CategoryInputFormGroup;
-  @Input() categoryId?: number;
+  @Input() categoryId?: string;
   saving = false;
 
   constructor(

@@ -81,6 +81,9 @@ export class OrderFilterComponent implements OnInit {
     if(this.appliedFilter.totalAmountTo){
       this.form!.controls.totalAmountTo.setValue(this.appliedFilter.totalAmountTo);
     }
+    if(this.appliedFilter.customerId){
+      this.form!.controls.customerId.setValue(this.appliedFilter.customerId);
+    }
   }
 
   public search(){
@@ -111,6 +114,9 @@ export class OrderFilterComponent implements OnInit {
     }
     if(this.form!.controls.code.value){
       orderFilter.orderCode = this.form!.controls.code.value
+    }
+    if(this.form!.controls.customerId.value){
+      orderFilter.customerId = this.form!.controls.customerId.value
     }
 
     return orderFilter;

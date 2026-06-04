@@ -23,7 +23,7 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th pSortableColumn="id">Code<p-sortIcon field="id"></p-sortIcon></th>
-                    <th pSortableColumn="shipping.fullName">Customer<p-sortIcon field="shipping.fullName"></p-sortIcon></th>
+                    <th pSortableColumn="customer.firstName">Customer<p-sortIcon field="customer.firstName"></p-sortIcon></th>
                     <th pSortableColumn="totalItems">Total items<p-sortIcon field="totalItems"></p-sortIcon></th>
                     <th pSortableColumn="totalAmount">Total Amount<p-sortIcon field="totalAmount"></p-sortIcon></th>
                     <th pSortableColumn="status">Status<p-sortIcon field="status"></p-sortIcon></th>
@@ -41,7 +41,7 @@
                       </a>
                     </td>
                     <td>
-                        {{order.customerName}}
+                        {{order.customer?.firstName}} {{order.customer?.lastName}}
                     </td>
                     <td>
                         {{order.totalItems}}

@@ -1,14 +1,19 @@
 import { HttpParams } from "@angular/common/http";
 
 export interface CustomerModel {
-  id: number;
-  fullName: string;
+  id: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
-  birthDate: Date;
+  birthDate: string;
   document: string;
-  allowPromotionNotifications: boolean;
-  address: CustomerAddressModel;
+  loyaltyPoints?: number;
+  registeredAt?: string;
+  archivedAt?: string;
+  promotionNotificationsAllowed: boolean;
+  archived?: boolean;
+  address?: CustomerAddressModel;
 }
 export interface CustomerAddressModel {
   street: string;
@@ -25,10 +30,10 @@ export class CustomerFilter {
   direction?: string;
   page: number = 0;
   size: number = 10;
-  sort: string = 'fullName,ASC';
+  sort: string = 'REGISTERED_AT';
 
+  firstName?: string;
   email?: string;
-  document?: string;
 
   constructor(data?: {}) {
     // this.applyParams(data);
@@ -72,34 +77,17 @@ export class CustomerFilter {
       if(this.email){
         params = params.set('email', this.email);
       }
-      if(this.document){
-        params = params.set('document', this.document);
+      if(this.firstName){
+        params = params.set('firstName', this.firstName);
+      }
+
+      const [property, direction = 'ASC'] = this.sort?.split(',') || [];
+      if (property) {
+        params = params
+          .set('sortByProperty', property)
+          .set('sortDirection', direction);
       }
 
       return params;
   }
-}
-
-export class CustomerInput {
-  constructor(
-      public fullName: string,
-      public email: string,
-      public phone: string,
-      public bornOn: Date,
-      public document: string,
-      public allowPromotionNotifications: boolean,
-      public address: CustomerAddressInput,
-  ) {}
-}
-
-export class CustomerAddressInput {
-  constructor(
-    public street: string,
-    public number: string,
-    public complement: string,
-    public neighborhood: string,
-    public city: string,
-    public state: string,
-    public zipCode: string,
-) {}
 }

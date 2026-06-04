@@ -35,6 +35,7 @@
                 <label>Email</label>
                 <input pInputText type="text"
                         formControlName="email"
+                        [readonly]="isEditing()"
                         class="form-control">
                 <app-validation-message
                         [control]="form?.get('email')"
@@ -44,6 +45,10 @@
                         [control]="form?.get('email')"
                         error="email"
                         text="Email is invalid."/>
+            </div>
+            <div class="field col-12 md:col-4" *ngIf="isEditing()">
+                <label>Enabled</label>
+                <p-inputSwitch formControlName="enabled" class="form-control"/>
             </div>
         </div>
         <p-divider></p-divider>

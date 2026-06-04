@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrl: './product-edit-page.component.css'
 })
 export class ProductEditPageComponent implements OnInit {
-  productId?: number;
+  productId?: string;
 
   constructor(
     private route: ActivatedRoute

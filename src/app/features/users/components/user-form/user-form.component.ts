@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { UsersService } from '../../users.service';
 import { firstValueFrom } from 'rxjs';
-import { UserInput, UserModel, UserType } from '../../models/model';
+import { UserInput, UserModel, UserType, UserUpdateInput } from '../../models/model';
 import { enumToOptions } from 'src/app/shared/shared.module';
 
-type UserInputControls = { [key in keyof UserInput]: AbstractControl}
-type UserInputFormGroup = FormGroup & {value: UserInput, control: UserInputControls}
+type UserInputControls = { [key: string]: AbstractControl}
+type UserInputFormGroup = FormGroup & {value: UserInput, controls: UserInputControls}
 
 @Component({
   selector: 'app-user-form',
@@ -39,9 +39,8 @@ export class UserFormComponent implements OnInit {
   save() {
     this.saving = true;
 
-    let input = this.generateInput();
-
     if (this.isEditing()) {
+        let input = this.generateUpdateInput();
         firstValueFrom(this.usersService.update(this.userId!, input))
           .then(() => {
             this.saving = false;
@@ -52,6 +51,7 @@ export class UserFormComponent implements OnInit {
             this.displayErrorMessage(e.error);
           })
     } else {
+      let input = this.generateInput();
       firstValueFrom(this.usersService.create(input))
         .then((user) => {
           this.saving = false;
@@ -78,6 +78,7 @@ export class UserFormComponent implements OnInit {
       name: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required, Validators.email]),
       type: new FormControl(null, [Validators.required]),
+      enabled: new FormControl(true, [Validators.required]),
     }) as UserInputFormGroup;
 
   }
@@ -103,6 +104,14 @@ export class UserFormComponent implements OnInit {
       this.form!.controls.name.value,
       this.form!.controls.email.value,
       this.form!.controls.type.value.value
+    );
+  }
+
+  private generateUpdateInput() : UserUpdateInput {
+    return new UserUpdateInput(
+      this.form!.controls.name.value,
+      this.form!.controls.type.value.value,
+      this.form!.controls.enabled.value
     );
   }
 

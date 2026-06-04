@@ -73,16 +73,16 @@ export class OrderListPageComponent implements OnInit {
     const queryParams: any = { ...this.filter };
 
     if(this.filter.status && this.filter.status !== '') {
-      queryParams.status = this.filter.status.value;
+      queryParams.status = this.filter.status.value || this.filter.status;
     }
     if(this.filter.paymentMethod) {
-      queryParams.paymentMethod = this.filter.paymentMethod.value;
+      queryParams.paymentMethod = this.filter.paymentMethod.value || this.filter.paymentMethod;
     }
     if(this.filter.placedAtFrom) {
-      queryParams.placedAtFrom = new Date(this.filter.placedAtFrom).toISOString();
+      queryParams.placedAtFrom = new Date(this.filter.placedAtFrom).toISOString().substring(0, 10);
     }
     if(this.filter.placedAtTo) {
-      queryParams.placedAtTo = new Date(this.filter.placedAtTo).toISOString();
+      queryParams.placedAtTo = new Date(this.filter.placedAtTo).toISOString().substring(0, 10);
     }
 
     this.reloadRouteWithParams(queryParams);

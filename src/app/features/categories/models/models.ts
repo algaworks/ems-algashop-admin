@@ -1,11 +1,17 @@
 import { HttpParams } from "@angular/common/http";
+import { applySortParams } from "src/app/core/models";
+
+const CATEGORY_SORT_PROPERTIES: Record<string, string> = {
+    NAME: 'NAME',
+    name: 'NAME',
+};
 
 export interface Page<T> {
     content: T[];
     totalElements: number;
     totalPages: number;
     size: number;
-    page: number;
+    number: number;
 }
 
 export class PageRequest {
@@ -51,7 +57,7 @@ export class CategoryFilter {
     direction?: string;
     page: number = 0;
     size: number = 10;
-    sort: string = 'name,ASC';
+    sort: string = 'NAME,ASC';
 
     name?: string;
     enabled?: boolean;
@@ -94,20 +100,16 @@ export class CategoryFilter {
         if(this.name) {
             params = params.set('name', this.name);
         }
-        if(this.enabled) {
+        if(this.enabled !== undefined && this.enabled !== null) {
             params = params.set('enabled', this.enabled);
         }
 
-        if(this.sort) {
-            params = params.set('sort', this.sort);
-        }
-
-        return params;
+        return applySortParams(params, this.sort, CATEGORY_SORT_PROPERTIES);
     }
 }
 
 export interface CategoryModel {
-    id: number;
+    id: string;
     name: string;
     enabled: boolean;
     slug: string;

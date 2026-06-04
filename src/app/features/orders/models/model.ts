@@ -1,31 +1,27 @@
 import { HttpParams } from "@angular/common/http";
+import { applySortParams } from "src/app/core/models";
 
 export interface OrderModel {
-  id: number;
-  code: string;
-  customerId: string;
-  shipping: PersonalInfo;
-  billing: PersonalInfo;
-  email: string;
-  phone: string;
+  id: string;
+  customer: CustomerMinimalModel;
   totalItems: number;
   totalAmount: number;
   status: OrderStatus;
-  placedAt: Date;
-  updatedAt: Date;
-  deliveredAt: Date;
-  canceledAt: Date;
-  paidAt: Date;
-  refundedAt: Date;
+  placedAt: string;
+  canceledAt?: string;
+  paidAt?: string;
+  readyAt?: string;
   paymentMethod: PaymentMethodType;
-  items: OrderItemModel[];
+  creditCardId?: string;
+  shipping?: ShippingModel;
+  billing?: BillingModel;
+  items?: OrderItemModel[];
 }
 export interface OrderItemModel {
+  id: string;
   productId: string
-  name: string
-  regularPrice: number
-  salePrice: number
-  hasDiscount: boolean
+  productName: string
+  price: number
   quantity: number
   totalAmount: number
 }
@@ -35,7 +31,7 @@ export class OrderFilter {
   direction?: string;
   page: number = 0;
   size: number = 10;
-  sort: string = 'code,ASC';
+  sort: string = 'PLACE_AT';
 
   status?: any;
   placedAtFrom?: Date;
@@ -88,18 +84,15 @@ export class OrderFilter {
           .set('page', this.page)
           .set('size', this.size);
 
-      if(this.sort) {
-          params = params.set('sort', this.sort);
-      }
       if(this.status){
         params = params.set('status', this.status);
       }
       if(this.placedAtFrom){
-        const formattedDate = new Date(this.placedAtFrom).toISOString();
+        const formattedDate = new Date(this.placedAtFrom).toISOString().substring(0, 10);
         params = params.set('placedAtFrom', formattedDate);
       }
       if(this.placedAtTo){
-        const formattedDate = new Date(this.placedAtTo).toISOString();
+        const formattedDate = new Date(this.placedAtTo).toISOString().substring(0, 10);
         params = params.set('placedAtTo', formattedDate);
       }
       if(this.totalAmountFrom){
@@ -112,40 +105,59 @@ export class OrderFilter {
         params = params.set('paymentMethod', this.paymentMethod);
       }
       if(this.orderCode){
-        params = params.set('code', this.orderCode);
+        params = params.set('orderId', this.orderCode);
+      }
+      if(this.customerId){
+        params = params.set('customerId', this.customerId);
       }
 
-      return params;
+      return applySortParams(params, this.sort);
   }
 }
 
 export enum OrderStatus {
-  RECEIVED = "Received",
-  APPROVED = "Approved",
-  INVOICED = "Invoiced",
-  READY = "Ready",
+  DRAFT = "Draft",
+  PLACED = "Placed",
   PAID = "Paid",
-  SHIPPED = "Shipped",
-  DELIVERED = "Delivered",
-  CANCELLING = "Cancelling",
+  READY = "Ready",
   CANCELED = "Canceled",
-  REFUNDED = "Refunded",
 }
 export enum PaymentMethodType {
-  PIX = "Pix",
   CREDIT_CARD = "Credit card",
   GATEWAY_BALANCE = "Gateway Balance"
 }
 
 export interface CustomerModel {
-  id: number;
-  fullName: string;
+  id: string;
+  firstName: string;
+  lastName: string;
 }
 
-export interface PersonalInfo {
-  fullName: string
+export interface CustomerMinimalModel {
+  id: string;
+  firstName: string;
+  lastName: string;
+  document: string;
+  email: string;
+  phone: string;
+}
+
+export interface RecipientModel {
+  firstName: string
+  lastName: string
   document: string
   phone: string
+}
+
+export interface BillingModel extends RecipientModel {
+  email: string
+  address: AddressModel
+}
+
+export interface ShippingModel {
+  cost: number
+  expectedDate: string
+  recipient: RecipientModel
   address: AddressModel
 }
 

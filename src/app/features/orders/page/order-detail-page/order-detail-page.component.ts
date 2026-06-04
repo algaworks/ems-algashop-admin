@@ -6,6 +6,9 @@ import { enumToString, sleep } from 'src/app/shared/shared.module';
 import { OrdersService } from '../../orders.service';
 import { firstValueFrom } from 'rxjs';
 import { OrderItemModel, OrderModel, OrderStatus, PaymentMethodType } from '../../models/model';
+import { InvoicesService } from '../../../payments/invoices.service';
+import { InvoiceModel, PaymentMethod } from '../../../payments/models/model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-order-detail-page',
@@ -15,8 +18,11 @@ import { OrderItemModel, OrderModel, OrderStatus, PaymentMethodType } from '../.
 export class OrderDetailPageComponent implements OnInit {
   order?: OrderModel;
   orderItems?: OrderItemModel[] = [];
+  invoice?: InvoiceModel;
   orderCode?: string;
   loading = true;
+  loadingInvoice = true;
+  invoiceNotFound = false;
   menuItems: MenuItem[] = [];
 
   canShowShippingInfo: boolean = false;
@@ -24,6 +30,7 @@ export class OrderDetailPageComponent implements OnInit {
 
   constructor(
     private ordersService: OrdersService,
+    private invoicesService: InvoicesService,
     private route: ActivatedRoute,
     private router: Router,
     private messageService: MessageService,
@@ -69,8 +76,9 @@ export class OrderDetailPageComponent implements OnInit {
     firstValueFrom(this.ordersService.getOne(this.orderCode!))
       .then(order => {
         this.order = order;
-        this.orderItems = order.items;
+        this.orderItems = order.items || [];
         this.loading = false;
+        this.loadInvoice(order.id);
       })
       .catch(e => {
         console.error(e);
@@ -81,6 +89,29 @@ export class OrderDetailPageComponent implements OnInit {
             boolean: true
         }
         this.messageService.add(message);
+      });
+  }
+
+  private loadInvoice(orderId: string) {
+    this.loadingInvoice = true;
+    this.invoiceNotFound = false;
+
+    firstValueFrom(this.invoicesService.getByOrderId(orderId))
+      .then(invoice => {
+        this.invoice = invoice;
+        this.loadingInvoice = false;
+      })
+      .catch((e: HttpErrorResponse) => {
+        this.loadingInvoice = false;
+        if (e.status === 404) {
+          this.invoiceNotFound = true;
+          return;
+        }
+        this.messageService.add({
+          severity:'error',
+          summary: 'Erro de conexão com o servidor',
+          detail: 'Não foi possível recuperar a invoice'
+        });
       });
   }
 
@@ -96,6 +127,10 @@ export class OrderDetailPageComponent implements OnInit {
   }
   public enumPaymentMethodToValue(enumObj: PaymentMethodType) {
     return enumToString(PaymentMethodType, enumObj);
+  }
+
+  public enumInvoicePaymentMethodToValue(enumObj: PaymentMethod | undefined) {
+    return enumToString(PaymentMethod, enumObj);
   }
 
 }

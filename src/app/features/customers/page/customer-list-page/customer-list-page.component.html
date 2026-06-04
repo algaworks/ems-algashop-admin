@@ -2,13 +2,6 @@
     <div class="p-col-12">
         <div class="aw-page-title">
             <h1 class="aw-card-title">Customers</h1>
-            <button routerLink="/customers/new"
-                pButton
-                pRipple
-                type="button"
-                label="New"
-                class="p-button-primary p-button-outlined">
-            </button>
         </div>
         <div class="aw-page-options">
             <!--filter-->
@@ -29,7 +22,7 @@
                 [loading]="loading">
             <ng-template pTemplate="header">
                 <tr>
-                    <th pSortableColumn="fullName">Name<p-sortIcon field="fullName"></p-sortIcon></th>
+                    <th pSortableColumn="firstName">Name<p-sortIcon field="firstName"></p-sortIcon></th>
                     <th pSortableColumn="email">Email<p-sortIcon field="email"></p-sortIcon></th>
                     <th>Phone<p-sortIcon field="phone"></p-sortIcon></th>
                     <th pSortableColumn="birthDate">Born on<p-sortIcon field="birthDate"></p-sortIcon></th>
@@ -41,7 +34,7 @@
                     <td>
                         <a routerLink="/customers/{{customer.id}}"
                             class="aw-table-link">
-                            {{customer.fullName}}
+                            {{customer.firstName}} {{customer.lastName}}
                         </a>
                     </td>
                     <td>

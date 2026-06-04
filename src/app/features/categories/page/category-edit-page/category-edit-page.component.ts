@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrl: './category-edit-page.component.css'
 })
 export class CategoryEditPageComponent implements OnInit {
-  categoryId?: number;
+  categoryId?: string;
 
   constructor(
     private route: ActivatedRoute

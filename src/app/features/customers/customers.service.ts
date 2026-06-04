@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Page } from 'src/app/core/models';
 import { Observable } from 'rxjs';
-import { CustomerFilter, CustomerInput, CustomerModel } from './models/model';
+import { CustomerFilter, CustomerModel } from './models/model';
 
 @Injectable({
     providedIn: 'root'
@@ -22,10 +22,6 @@ export class CustomersService {
 
     getOne(customerId: string): Observable<CustomerModel> {
         return this.http.get<CustomerModel>(`${this.url}/${customerId}`);
-    }
-
-    create(customerInput: CustomerInput): Observable<CustomerModel> {
-        return this.http.post<CustomerModel>(`${this.url}`, customerInput);
     }
 
 }
