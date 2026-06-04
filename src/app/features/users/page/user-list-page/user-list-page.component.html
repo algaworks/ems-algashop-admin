@@ -1,0 +1,70 @@
+<div class="p-grid">
+    <div class="p-col-12">
+        <div class="aw-page-title">
+            <h1 class="aw-card-title">Users</h1>
+            <button routerLink="/users/new"
+                pButton
+                pRipple
+                type="button"
+                label="New"
+                class="p-button-primary p-button-outlined">
+            </button>
+        </div>
+        <div class="aw-page-options">
+            <!--filter-->
+            <app-user-filter (doFilter)="doSearch($event)"
+                             [appliedFilter]="filter"/>
+        </div>
+
+        <p-table [value]="users!"
+                styleClass="p-datatable-sm p-card"
+                [lazyLoadOnInit]="false"
+                [resizableColumns]="true"
+                columnResizeMode="expand"
+                [lazy]="true"
+                (onLazyLoad)="onPageChange($event)"
+                [paginator]="true"
+                [rows]="recordsPerPage"
+                [totalRecords]="totalElements"
+                [loading]="loading">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="name">Name<p-sortIcon field="name"></p-sortIcon></th>
+                    <th pSortableColumn="email">Email<p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="type">Type<p-sortIcon field="type"></p-sortIcon></th>
+                    <th pSortableColumn="createdAt">Created<p-sortIcon field="createdAt"></p-sortIcon></th>
+                    <th pSortableColumn="updatedAt">Updated<p-sortIcon field="updatedAt"></p-sortIcon></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+                <tr>
+                    <td>
+                        <a routerLink="/users/{{user.id}}"
+                            class="aw-table-link">
+                            {{user.name}}
+                        </a>
+                    </td>
+                    <td>
+                        {{user.email}}
+                    </td>
+                    <td>
+                        {{enumToValue(user.type)}}
+                    </td>
+                     <td>
+                        {{user.createdAt | date}}
+                    </td>
+                     <td>
+                        {{user.updatedAt | date}}
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage" let-columns>
+                <tr>
+                    <td [attr.colspan]="5" style="text-align: center; padding: 1em;">
+                      No results were found for this search.
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
