@@ -31,14 +31,13 @@ export class OrderFilter {
   direction?: string;
   page: number = 0;
   size: number = 10;
-  sort: string = 'PLACE_AT';
+  sort: string = `${OrderSortProperty.PLACE_AT},ASC`;
 
   status?: any;
   placedAtFrom?: Date;
   placedAtTo?: Date;
   totalAmountFrom?: number;
   totalAmountTo?: number;
-  paymentMethod?: any;
   orderCode?: string;
   customerId?: string;
 
@@ -51,9 +50,6 @@ export class OrderFilter {
 
       if(params?.status){
         this.status = params.status;
-      }
-      if(params?.paymentMethod){
-        this.paymentMethod = params.paymentMethod;
       }
   }
 
@@ -85,7 +81,7 @@ export class OrderFilter {
           .set('size', this.size);
 
       if(this.status){
-        params = params.set('status', this.status);
+        params = params.set('status', this.status.value || this.status);
       }
       if(this.placedAtFrom){
         const formattedDate = new Date(this.placedAtFrom).toISOString().substring(0, 10);
@@ -101,9 +97,6 @@ export class OrderFilter {
       if(this.totalAmountTo){
         params = params.set('totalAmountTo', this.totalAmountTo);
       }
-      if(this.paymentMethod){
-        params = params.set('paymentMethod', this.paymentMethod);
-      }
       if(this.orderCode){
         params = params.set('orderId', this.orderCode);
       }
@@ -113,6 +106,13 @@ export class OrderFilter {
 
       return applySortParams(params, this.sort);
   }
+}
+
+export enum OrderSortProperty {
+  PLACE_AT = 'PLACE_AT',
+  PAID_AT = 'PAID_AT',
+  CANCELED_AT = 'CANCELED_AT',
+  STATUS = 'STATUS',
 }
 
 export enum OrderStatus {

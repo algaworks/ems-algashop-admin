@@ -1,10 +1,9 @@
 import { HttpParams } from "@angular/common/http";
 import { applySortParams } from "src/app/core/models";
 
-const CATEGORY_SORT_PROPERTIES: Record<string, string> = {
-    NAME: 'NAME',
-    name: 'NAME',
-};
+export enum CategorySortProperty {
+    NAME = 'NAME',
+}
 
 export interface Page<T> {
     content: T[];
@@ -57,7 +56,7 @@ export class CategoryFilter {
     direction?: string;
     page: number = 0;
     size: number = 10;
-    sort: string = 'NAME,ASC';
+    sort: string = `${CategorySortProperty.NAME},ASC`;
 
     name?: string;
     enabled?: boolean;
@@ -104,7 +103,7 @@ export class CategoryFilter {
             params = params.set('enabled', this.enabled);
         }
 
-        return applySortParams(params, this.sort, CATEGORY_SORT_PROPERTIES);
+        return applySortParams(params, this.sort);
     }
 }
 

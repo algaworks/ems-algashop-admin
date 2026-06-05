@@ -5,7 +5,7 @@ import { CategoriesService } from '../../categories.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { sleep } from 'src/app/shared/shared.module';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { CategoryFilter, CategoryModel } from '../../models/models';
+import { CategoryFilter, CategoryModel, CategorySortProperty } from '../../models/models';
 
 @Component({
   selector: 'app-category-list-page',
@@ -13,6 +13,7 @@ import { CategoryFilter, CategoryModel } from '../../models/models';
   styleUrl: './category-list-page.component.css'
 })
 export class CategoryListPageComponent implements OnInit {
+  readonly sortProperties = CategorySortProperty;
   categories: CategoryModel[] = [];
   filter: CategoryFilter = new CategoryFilter();
   totalElements = 0;

@@ -28,8 +28,7 @@
                 [loading]="loading">
             <ng-template pTemplate="header">
                 <tr>
-                    <th pSortableColumn="name">Name<p-sortIcon field="name"></p-sortIcon></th>
-                    <th>Slug</th>
+                    <th [pSortableColumn]="sortProperties.NAME">Name<p-sortIcon [field]="sortProperties.NAME"></p-sortIcon></th>
                     <th>Enabled</th>
                 </tr>
             </ng-template>
@@ -40,9 +39,6 @@
                             class="aw-table-link">
                             {{category.name}}
                         </a>
-                    </td>
-                    <td>
-                        {{category.slug}}
                     </td>
                     <td>
                       <app-category-status-badge [enabled]="category.enabled"/>

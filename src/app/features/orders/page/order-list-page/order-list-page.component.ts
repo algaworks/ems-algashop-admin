@@ -5,7 +5,7 @@ import { OrdersService } from '../../orders.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { enumToString, sleep } from 'src/app/shared/shared.module';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { OrderFilter, OrderModel, OrderStatus } from '../../models/model';
+import { OrderFilter, OrderModel, OrderSortProperty, OrderStatus } from '../../models/model';
 
 @Component({
   selector: 'app-order-list-page',
@@ -13,6 +13,7 @@ import { OrderFilter, OrderModel, OrderStatus } from '../../models/model';
   styleUrl: './order-list-page.component.css'
 })
 export class OrderListPageComponent implements OnInit {
+  readonly sortProperties = OrderSortProperty;
   orders: OrderModel[] = [];
   filter: OrderFilter = new OrderFilter();
   totalElements = 0;
@@ -74,9 +75,6 @@ export class OrderListPageComponent implements OnInit {
 
     if(this.filter.status && this.filter.status !== '') {
       queryParams.status = this.filter.status.value || this.filter.status;
-    }
-    if(this.filter.paymentMethod) {
-      queryParams.paymentMethod = this.filter.paymentMethod.value || this.filter.paymentMethod;
     }
     if(this.filter.placedAtFrom) {
       queryParams.placedAtFrom = new Date(this.filter.placedAtFrom).toISOString().substring(0, 10);

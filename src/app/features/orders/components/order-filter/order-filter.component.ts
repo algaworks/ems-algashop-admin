@@ -1,5 +1,5 @@
 import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
-import { OrderFilter, OrderModel, OrderStatus, PaymentMethodType } from './../../models/model';
+import { OrderFilter, OrderModel, OrderStatus } from './../../models/model';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { enumToOptions, enumToString } from 'src/app/shared/shared.module';
 import { AutoCompleteCompleteEvent } from 'primeng/autocomplete';
@@ -18,9 +18,6 @@ export class OrderFilterComponent implements OnInit {
   form?: OrderInputFormGroup;
   statusList: any[] = [];
   filteredStatusList: any[] = [];
-  paymentMethods: any[] = [];
-  filteredPaymentMethods: any[] = [];
-  searchedCustomers: any[] = [];
   searching = false;
 
   @Output() doFilter: EventEmitter<OrderFilter> = new EventEmitter<OrderFilter>();
@@ -42,15 +39,12 @@ export class OrderFilterComponent implements OnInit {
       placedAtTo: new FormControl(null),
       totalAmountFrom: new FormControl(null),
       totalAmountTo: new FormControl(null),
-      paymentMethod: new FormControl(null),
       code: new FormControl(null),
-      customerId: new FormControl(null),
     }) as OrderInputFormGroup;
   }
 
   private loadData() {
     this.statusList = enumToOptions(OrderStatus);
-    this.paymentMethods = enumToOptions(PaymentMethodType);
   }
 
   loadFilterState() {
@@ -60,14 +54,6 @@ export class OrderFilterComponent implements OnInit {
     if(this.appliedFilter.status){
       let status = {label: enumToString(OrderStatus, this.appliedFilter.status), value: this.appliedFilter.status}
       this.form!.controls.status.setValue(status);
-    }
-    if(this.appliedFilter.paymentMethod){
-      let paymentMethod = {label: enumToString(PaymentMethodType, this.appliedFilter.paymentMethod), value: this.appliedFilter.paymentMethod}
-      this.form!.controls.paymentMethod.setValue(paymentMethod);
-    }
-    if(this.appliedFilter.paymentMethod){
-      let paymentMethod = {label: enumToString(PaymentMethodType, this.appliedFilter.paymentMethod), value: this.appliedFilter.paymentMethod}
-      this.form!.controls.paymentMethod.setValue(paymentMethod);
     }
     if(this.appliedFilter.placedAtFrom){
       this.form!.controls.placedAtFrom.setValue(new Date(this.appliedFilter.placedAtFrom));
@@ -81,9 +67,6 @@ export class OrderFilterComponent implements OnInit {
     if(this.appliedFilter.totalAmountTo){
       this.form!.controls.totalAmountTo.setValue(this.appliedFilter.totalAmountTo);
     }
-    if(this.appliedFilter.customerId){
-      this.form!.controls.customerId.setValue(this.appliedFilter.customerId);
-    }
   }
 
   public search(){
@@ -95,7 +78,7 @@ export class OrderFilterComponent implements OnInit {
 
     const orderFilter: OrderFilter = new OrderFilter();
     if(this.form!.controls.status.value){
-      orderFilter.status = this.form!.controls.status.value;
+      orderFilter.status = this.form!.controls.status.value.value || this.form!.controls.status.value;
     }
     if(this.form!.controls.placedAtFrom.value){
       orderFilter.placedAtFrom = this.form!.controls.placedAtFrom.value
@@ -109,14 +92,11 @@ export class OrderFilterComponent implements OnInit {
     if(this.form!.controls.totalAmountTo.value){
       orderFilter.totalAmountTo = this.form!.controls.totalAmountTo.value
     }
-    if(this.form!.controls.paymentMethod.value){
-      orderFilter.paymentMethod = this.form!.controls.paymentMethod.value
-    }
     if(this.form!.controls.code.value){
       orderFilter.orderCode = this.form!.controls.code.value
     }
-    if(this.form!.controls.customerId.value){
-      orderFilter.customerId = this.form!.controls.customerId.value
+    if(this.appliedFilter.customerId){
+      orderFilter.customerId = this.appliedFilter.customerId
     }
 
     return orderFilter;
@@ -136,20 +116,6 @@ export class OrderFilterComponent implements OnInit {
 
     this.filteredStatusList = filtered;
   }
-  public filterPaymentMethods(event: AutoCompleteCompleteEvent){
-    let filtered: any[] = [];
-    let query = event.query;
-
-    for (let i = 0; i < (this.paymentMethods as any[]).length; i++) {
-        let paymentMethod = (this.paymentMethods as any[])[i];
-        if (paymentMethod.label.toLowerCase().indexOf(query.toLowerCase()) == 0) {
-            filtered.push(paymentMethod);
-        }
-    }
-
-    this.filteredPaymentMethods = filtered;
-  }
-
   public clearFilter(){
     this.form!.reset();
     this.search();

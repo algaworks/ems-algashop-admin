@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LazyLoadEvent, MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
-import { Page, ProductModel, ProductFilter } from 'src/app/core/models';
+import { Page, ProductModel, ProductFilter, ProductSortProperty } from 'src/app/core/models';
 import { ProductsService } from '../../products.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -14,6 +14,7 @@ import { TableLazyLoadEvent } from 'primeng/table';
   styleUrl: './product-list-page.component.css'
 })
 export class ProductListPageComponent implements OnInit {
+  readonly sortProperties = ProductSortProperty;
   products: ProductModel[] = [];
   filter: ProductFilter = new ProductFilter();
   totalElements = 0;

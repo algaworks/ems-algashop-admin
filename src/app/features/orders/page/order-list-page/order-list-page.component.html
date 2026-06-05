@@ -22,14 +22,14 @@
                 [loading]="loading">
             <ng-template pTemplate="header">
                 <tr>
-                    <th pSortableColumn="id">Code<p-sortIcon field="id"></p-sortIcon></th>
-                    <th pSortableColumn="customer.firstName">Customer<p-sortIcon field="customer.firstName"></p-sortIcon></th>
-                    <th pSortableColumn="totalItems">Total items<p-sortIcon field="totalItems"></p-sortIcon></th>
-                    <th pSortableColumn="totalAmount">Total Amount<p-sortIcon field="totalAmount"></p-sortIcon></th>
-                    <th pSortableColumn="status">Status<p-sortIcon field="status"></p-sortIcon></th>
-                    <th pSortableColumn="placedAt">Ordered at<p-sortIcon field="placedAt"></p-sortIcon></th>
-                    <th pSortableColumn="paidAt">Paid at<p-sortIcon field="paidAt"></p-sortIcon></th>
-                    <th pSortableColumn="canceledAt">Canceled at<p-sortIcon field="canceledAt"></p-sortIcon></th>
+                    <th>Code</th>
+                    <th>Customer</th>
+                    <th>Total items</th>
+                    <th>Total Amount</th>
+                    <th [pSortableColumn]="sortProperties.STATUS">Status<p-sortIcon [field]="sortProperties.STATUS"></p-sortIcon></th>
+                    <th [pSortableColumn]="sortProperties.PLACE_AT">Ordered at<p-sortIcon [field]="sortProperties.PLACE_AT"></p-sortIcon></th>
+                    <th [pSortableColumn]="sortProperties.PAID_AT">Paid at<p-sortIcon [field]="sortProperties.PAID_AT"></p-sortIcon></th>
+                    <th [pSortableColumn]="sortProperties.CANCELED_AT">Canceled at<p-sortIcon [field]="sortProperties.CANCELED_AT"></p-sortIcon></th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-order>

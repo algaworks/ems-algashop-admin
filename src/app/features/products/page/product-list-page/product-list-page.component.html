@@ -34,11 +34,11 @@
                     <th>Category</th>
                     <th>Brand</th>
                     <th>On sale</th>
-                    <th pSortableColumn="salePrice">Sale price<p-sortIcon field="salePrice"></p-sortIcon></th>
+                    <th [pSortableColumn]="sortProperties.SALE_PRICE">Sale price<p-sortIcon [field]="sortProperties.SALE_PRICE"></p-sortIcon></th>
                     <th>Discount percentage</th>
                     <th>Status</th>
                     <th>In stock</th>
-                    <th pSortableColumn="addedAt">Creation date<p-sortIcon field="addedAt"></p-sortIcon></th>
+                    <th [pSortableColumn]="sortProperties.ADDED_AT">Creation date<p-sortIcon [field]="sortProperties.ADDED_AT"></p-sortIcon></th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-product>

@@ -5,7 +5,7 @@ import { CustomersService } from '../../customers.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { sleep } from 'src/app/shared/shared.module';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { CustomerFilter, CustomerModel } from '../../models/model';
+import { CustomerFilter, CustomerModel, CustomerSortProperty } from '../../models/model';
 
 @Component({
   selector: 'app-customer-list-page',
@@ -13,6 +13,7 @@ import { CustomerFilter, CustomerModel } from '../../models/model';
   styleUrl: './customer-list-page.component.css'
 })
 export class CustomerListPageComponent implements OnInit {
+  readonly sortProperties = CustomerSortProperty;
   customers: CustomerModel[] = [];
   filter: CustomerFilter = new CustomerFilter();
   totalElements = 0;

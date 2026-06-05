@@ -5,7 +5,7 @@ import { UsersService } from '../../users.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { enumToString, sleep } from 'src/app/shared/shared.module';
 import { TableLazyLoadEvent } from 'primeng/table';
-import { UserFilter, UserModel, UserType } from '../../models/model';
+import { UserFilter, UserModel, UserSortProperty, UserType } from '../../models/model';
 
 @Component({
   selector: 'app-user-list-page',
@@ -13,6 +13,7 @@ import { UserFilter, UserModel, UserType } from '../../models/model';
   styleUrl: './user-list-page.component.css'
 })
 export class UserListPageComponent implements OnInit {
+  readonly sortProperties = UserSortProperty;
   users: UserModel[] = [];
   filter: UserFilter = new UserFilter();
   totalElements = 0;

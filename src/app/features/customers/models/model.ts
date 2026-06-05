@@ -1,4 +1,10 @@
 import { HttpParams } from "@angular/common/http";
+import { applySortParams } from "src/app/core/models";
+
+export enum CustomerSortProperty {
+  REGISTERED_AT = 'REGISTERED_AT',
+  FIRST_NAME = 'FIRST_NAME',
+}
 
 export interface CustomerModel {
   id: string;
@@ -30,7 +36,7 @@ export class CustomerFilter {
   direction?: string;
   page: number = 0;
   size: number = 10;
-  sort: string = 'REGISTERED_AT';
+  sort: string = `${CustomerSortProperty.REGISTERED_AT},ASC`;
 
   firstName?: string;
   email?: string;
@@ -70,10 +76,6 @@ export class CustomerFilter {
           .set('page', this.page)
           .set('size', this.size);
 
-      if(this.sort) {
-          params = params.set('sort', this.sort);
-      }
-
       if(this.email){
         params = params.set('email', this.email);
       }
@@ -81,13 +83,6 @@ export class CustomerFilter {
         params = params.set('firstName', this.firstName);
       }
 
-      const [property, direction = 'ASC'] = this.sort?.split(',') || [];
-      if (property) {
-        params = params
-          .set('sortByProperty', property)
-          .set('sortDirection', direction);
-      }
-
-      return params;
+      return applySortParams(params, this.sort);
   }
 }

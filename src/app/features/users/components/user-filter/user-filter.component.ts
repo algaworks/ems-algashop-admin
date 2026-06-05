@@ -61,7 +61,7 @@ export class UserFilterComponent implements OnInit{
       userFilter.email = this.form!.controls.email.value;
     }
     if(this.form!.controls.type.value){
-      userFilter.type = this.form!.controls.type.value;
+      userFilter.type = this.form!.controls.type.value.value || this.form!.controls.type.value;
     }
 
     return userFilter;

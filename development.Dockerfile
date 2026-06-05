@@ -13,7 +13,7 @@ RUN npm ci
 COPY . .
 
 # Build do projeto Angular
-RUN npm run build
+RUN npm run build -- --configuration=development
 
 # Stage 2: Servir com Nginx
 FROM nginx:1.27-alpine

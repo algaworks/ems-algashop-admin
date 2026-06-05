@@ -10,8 +10,7 @@ export interface Page<T> {
 
 export function applySortParams(
     params: HttpParams,
-    sort?: string,
-    sortPropertyMap?: Record<string, string>
+    sort?: string
 ): HttpParams {
     if (!sort) {
         return params;
@@ -23,24 +22,17 @@ export function applySortParams(
         return params;
     }
 
-    const mappedProperty = sortPropertyMap ? sortPropertyMap[property] : property;
-    if (!mappedProperty) {
-        return params;
-    }
-
     const direction = rawDirection.trim().toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
     return params
-            .set('sortByProperty', mappedProperty)
+            .set('sortByProperty', property)
             .set('sortDirection', direction);
 }
 
-const PRODUCT_SORT_PROPERTIES: Record<string, string> = {
-    ADDED_AT: 'ADDED_AT',
-    addedAt: 'ADDED_AT',
-    SALE_PRICE: 'SALE_PRICE',
-    salePrice: 'SALE_PRICE',
-};
+export enum ProductSortProperty {
+    ADDED_AT = 'ADDED_AT',
+    SALE_PRICE = 'SALE_PRICE',
+}
 
 export class PageRequest {
     constructor(
@@ -85,7 +77,7 @@ export class ProductFilter {
     direction?: string;
     page: number = 0;
     size: number = 10;
-    sort: string = 'ADDED_AT,ASC';
+    sort: string = `${ProductSortProperty.ADDED_AT},ASC`;
 
     enabled?: boolean;
     inventoryStatus?: string;
@@ -173,7 +165,7 @@ export class ProductFilter {
           params = params.set('addedAtTo', this.addedAtTo);
         }
 
-        return applySortParams(params, this.sort, PRODUCT_SORT_PROPERTIES);
+        return applySortParams(params, this.sort);
     }
 }
 
@@ -261,5 +253,4 @@ export class ProductImagesInput {
         public ids: number[] = []
     ) {}
 }
-
 

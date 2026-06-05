@@ -7,10 +7,13 @@ export interface UserModel {
   email: string;
   enabled: boolean;
   type: UserType;
+}
 
-  //read only
-  createdAt?: string;
-  updatedAt?: string;
+export enum UserSortProperty {
+  NAME = 'NAME',
+  EMAIL = 'EMAIL',
+  ENABLED = 'ENABLED',
+  TYPE = 'TYPE',
 }
 
 export class UserFilter {
@@ -18,12 +21,10 @@ export class UserFilter {
   direction?: string;
   page: number = 0;
   size: number = 10;
-  sort: string = 'name,ASC';
+  sort: string = `${UserSortProperty.NAME},ASC`;
 
   email?: string;
   type?: any;
-  createdAtFrom?: string;
-  createdAtTo?: string;
 
   constructor(data?: {}) {
     // this.applyParams(data);
@@ -65,7 +66,7 @@ export class UserFilter {
       }
 
       if(this.type){
-        params = params.set('type', this.type);
+        params = params.set('type', this.type.value || this.type);
       }
 
       return applySortParams(params, this.sort);

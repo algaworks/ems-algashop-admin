@@ -22,11 +22,11 @@
                 [loading]="loading">
             <ng-template pTemplate="header">
                 <tr>
-                    <th pSortableColumn="firstName">Name<p-sortIcon field="firstName"></p-sortIcon></th>
-                    <th pSortableColumn="email">Email<p-sortIcon field="email"></p-sortIcon></th>
-                    <th>Phone<p-sortIcon field="phone"></p-sortIcon></th>
-                    <th pSortableColumn="birthDate">Born on<p-sortIcon field="birthDate"></p-sortIcon></th>
-                    <th>Document<p-sortIcon field="document"></p-sortIcon></th>
+                    <th [pSortableColumn]="sortProperties.FIRST_NAME">Name<p-sortIcon [field]="sortProperties.FIRST_NAME"></p-sortIcon></th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Born on</th>
+                    <th>Document</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-customer>
