@@ -36,6 +36,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://api.algashop.local:9999', 
   authUrl: 'http://auth.algashop.local:8081',
+  showDashboardExtraCards: false,
   authConfig,
   authModuleConfig
 };

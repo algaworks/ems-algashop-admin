@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Subscription, debounceTime, firstValueFrom } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { OrdersService } from '../../orders/orders.service';
 import { OrderFilter, OrderModel } from '../../orders/models/model';
 
@@ -10,6 +11,8 @@ import { OrderFilter, OrderModel } from '../../orders/models/model';
   styleUrl: './dashboard-detail-page.component.css'
 })
 export class DashboardDetailPageComponent implements OnInit {
+
+  readonly showDashboardExtraCards = environment.showDashboardExtraCards;
 
   items!: MenuItem[];
 
