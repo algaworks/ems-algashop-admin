@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { FallbackComponent } from './fallback.component';
+import { PublicHomeComponent } from './public-home.component';
 import { ShouldLoginComponent } from './should-login.component';
 
 import localeUs from '@angular/common/locales/en';
@@ -33,6 +34,7 @@ export const localeDateTimeFormat : any = {
     AppComponent,
     //AppMenuComponent,
     FallbackComponent,
+    PublicHomeComponent,
     ShouldLoginComponent,
   ],
   imports: [

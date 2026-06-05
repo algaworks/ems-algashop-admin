@@ -1,5 +1,5 @@
 <p-toast position="top-right"></p-toast>
 <p-confirmDialog></p-confirmDialog>
-<div class="ui-fluid ng-main" [ngClass]="theme" *ngIf="(canActivateProtectedRoutes$ | async) === true">
-    <router-outlet></router-outlet>
+<div class="ui-fluid ng-main" [ngClass]="theme">
+  <router-outlet></router-outlet>
 </div>

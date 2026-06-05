@@ -6,17 +6,19 @@ import { Subject } from 'rxjs';
 import { AuthService } from './auth.service';
 
 class FakeComponent {}
-const loginUrl = '/should-login';
 
 describe('AuthService', () => {
   let mockOAuthEvents: Subject<OAuthEvent>;
   let mockOAuthService: jasmine.SpyObj<OAuthService>;
   let router: Router;
+  let routerUrlSpy: jasmine.Spy;
 
   beforeEach(() => {
     mockOAuthEvents = new Subject<OAuthEvent>();
     mockOAuthService = jasmine.createSpyObj<OAuthService>({
       configure: void 0,
+      initLoginFlow: void 0,
+      initLoginFlowInPopup: Promise.resolve(),
       hasValidAccessToken: false,
       loadDiscoveryDocument: Promise.resolve(new OAuthSuccessEvent('discovery_document_loaded')),
       loadDiscoveryDocumentAndLogin: Promise.resolve(false),
@@ -43,6 +45,7 @@ describe('AuthService', () => {
       ]
     });
     router = TestBed.inject(Router);
+    routerUrlSpy = spyOnProperty(router, 'url', 'get').and.returnValue('/');
     spyOn(router, 'navigateByUrl');
   });
 
@@ -81,20 +84,77 @@ describe('AuthService', () => {
     });
 
     ['session_terminated', 'session_error'].forEach(eventType => {
-      it(`should react on OAuthService event ${eventType} and redirect to login`, () => {
+      it(`should react on OAuthService event ${eventType} and navigate to public home`, () => {
+        routerUrlSpy.and.returnValue('/dashboard');
         mockOAuthEvents.next({type: eventType as EventType});
 
-        expect(router.navigateByUrl).toHaveBeenCalledWith(loginUrl);
+        expect(router.navigateByUrl).toHaveBeenCalledWith('/');
+        expect(mockOAuthService.initLoginFlowInPopup).not.toHaveBeenCalled();
       });
     });
 
     it('should handle storage event and update isAuthenticated status', () => {
+      routerUrlSpy.and.returnValue('/dashboard');
       mockOAuthService.hasValidAccessToken.and.returnValue(false);
 
       window.dispatchEvent(new StorageEvent('storage', {key: 'access_token'}));
 
-      expect(router.navigateByUrl).toHaveBeenCalledWith(loginUrl);
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/');
+      expect(mockOAuthService.initLoginFlowInPopup).not.toHaveBeenCalled();
       service.isAuthenticated$.subscribe(isAuthenticated => expect(isAuthenticated).toBe(false));
+    });
+
+    it('should not start login flow on the public home route', () => {
+      routerUrlSpy.and.returnValue('/');
+      mockOAuthService.hasValidAccessToken.and.returnValue(false);
+
+      window.dispatchEvent(new StorageEvent('storage', {key: 'access_token'}));
+      mockOAuthEvents.next({type: 'session_error' as EventType});
+
+      expect(mockOAuthService.initLoginFlowInPopup).not.toHaveBeenCalled();
+      expect(router.navigateByUrl).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('login', () => {
+    let service: AuthService;
+    beforeEach(() => service = TestBed.inject(AuthService));
+
+    it('should navigate after popup login when token becomes valid', waitForAsync(() => {
+      mockOAuthService.hasValidAccessToken.and.returnValues(false, true);
+
+      service.login('/dashboard').then(() => {
+        expect(mockOAuthService.initLoginFlowInPopup).toHaveBeenCalled();
+        expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard');
+      });
+    }));
+
+    it('should keep current route after popup login when token is still invalid', waitForAsync(() => {
+      mockOAuthService.hasValidAccessToken.and.returnValue(false);
+
+      service.login('/dashboard').then(() => {
+        expect(mockOAuthService.initLoginFlowInPopup).toHaveBeenCalled();
+        expect(router.navigateByUrl).not.toHaveBeenCalled();
+      });
+    }));
+
+    it('should keep current route when popup login fails', waitForAsync(() => {
+      mockOAuthService.hasValidAccessToken.and.returnValue(false);
+      mockOAuthService.initLoginFlowInPopup.and.returnValue(Promise.reject('popup closed'));
+
+      service.login('/dashboard').then(() => {
+        expect(mockOAuthService.initLoginFlowInPopup).toHaveBeenCalled();
+        expect(router.navigateByUrl).not.toHaveBeenCalled();
+      });
+    }));
+
+    it('should navigate directly when token is valid', () => {
+      mockOAuthService.hasValidAccessToken.and.returnValue(true);
+
+      service.login('/dashboard');
+
+      expect(router.navigateByUrl).toHaveBeenCalledWith('/dashboard');
+      expect(mockOAuthService.initLoginFlowInPopup).not.toHaveBeenCalled();
     });
   });
 
@@ -111,20 +171,23 @@ describe('AuthService', () => {
       });
     }));
 
-    it('should silent login via refresh and navigate to state url when required user interaction', waitForAsync (() => {
+    it('should navigate to state url after login callback with a valid token', waitForAsync (() => {
       mockOAuthService.state = '/some/url';
+      mockOAuthService.hasValidAccessToken.and.returnValue(true);
 
       service.runInitialLoginSequence().then(() => {
         expect(mockOAuthService.tryLogin).toHaveBeenCalled();
-        expect(mockOAuthService.silentRefresh).toHaveBeenCalled();
+        expect(mockOAuthService.silentRefresh).not.toHaveBeenCalled();
         expect(router.navigateByUrl).toHaveBeenCalledWith('/some/url');
       });
     }));
 
-    it('should silent login via refresh without redirect', waitForAsync (() => {
+    it('should finish loading without silent refresh when there is no active token', waitForAsync (() => {
+      mockOAuthService.hasValidAccessToken.and.returnValue(false);
+
       service.runInitialLoginSequence().then(() => {
         expect(mockOAuthService.tryLogin).toHaveBeenCalled();
-        expect(mockOAuthService.silentRefresh).toHaveBeenCalled();
+        expect(mockOAuthService.silentRefresh).not.toHaveBeenCalled();
         expect(router.navigateByUrl).not.toHaveBeenCalled();
       });
     }));

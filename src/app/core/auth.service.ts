@@ -30,10 +30,17 @@ export class AuthService {
     this.isDoneLoading$
   ]).pipe(map(values => values.every(b => b)));
 
-  private navigateToLoginPage() {
-    // TODO: Remember current URL
-    //this.router.navigateByUrl('/should-login');
-    this.login();
+  private isPublicHomeRoute(): boolean {
+    const currentUrl = (this.router.url || window.location.pathname || '/').split('?')[0].split('#')[0];
+    return currentUrl === '/';
+  }
+
+  private navigateToPublicHome() {
+    if (this.isPublicHomeRoute()) {
+      return;
+    }
+
+    this.router.navigateByUrl('/');
   }
 
   constructor(
@@ -67,7 +74,7 @@ export class AuthService {
       this.isAuthenticatedSubject$.next(this.oauthService.hasValidAccessToken());
 
       if (!this.oauthService.hasValidAccessToken()) {
-        this.navigateToLoginPage();
+        this.navigateToPublicHome();
       }
     });
 
@@ -83,7 +90,7 @@ export class AuthService {
 
     this.oauthService.events
       .pipe(filter(e => ['session_terminated', 'session_error'].includes(e.type)))
-      .subscribe(e => this.navigateToLoginPage());
+      .subscribe(e => this.navigateToPublicHome());
 
     this.oauthService.setupAutomaticSilentRefresh();
   }
@@ -94,74 +101,15 @@ export class AuthService {
       console.table(location.hash.substr(1).split('&').map(kvp => kvp.split('=')));
     }
 
-    // 0. LOAD CONFIG:
-    // First we have to check to see how the IdServer is
-    // currently configured:
     return this.oauthService.loadDiscoveryDocument() //loadDiscoveryDocumentAndLogin?
-    .catch((e) => {
-      console.error(e);
-      alert('erro ao carregar a info do auth server');
-      this.isDoneLoadingSubject$.next(true);
-    })
-      // For demo purposes, we pretend the previous call was very slow
-      .then(() => new Promise<void>(resolve => setTimeout(() => resolve(), 1500)))
-
-      // 1. HASH LOGIN:
-      // Try to log in via hash fragment after redirect back
-      // from IdServer from initImplicitFlow:
       .then(() => this.oauthService.tryLogin())
-
-      .then(() => {
-        if (this.oauthService.hasValidAccessToken()) {
-          return Promise.resolve();
-        }
-
-        // 2. SILENT LOGIN:
-        // Try to log in via a refresh because then we can prevent
-        // needing to redirect the user:
-        return this.oauthService.silentRefresh()
-          .then(() => Promise.resolve())
-          .catch(result => {
-            // Subset of situations from https://openid.net/specs/openid-connect-core-1_0.html#AuthError
-            // Only the ones where it's reasonably sure that sending the
-            // user to the IdServer will help.
-            const errorResponsesRequiringUserInteraction = [
-              'interaction_required',
-              'login_required',
-              'account_selection_required',
-              'consent_required',
-            ];
-
-            if (result
-              && result.reason
-              && errorResponsesRequiringUserInteraction.indexOf(result.reason.error) >= 0) {
-
-              // 3. ASK FOR LOGIN:
-              // At this point we know for sure that we have to ask the
-              // user to log in, so we redirect them to the IdServer to
-              // enter credentials.
-              //
-              // Enable this to ALWAYS force a user to login.
-              // this.login();
-              //
-              // Instead, we'll now do this:
-              console.warn('User interaction is needed to log in, we will wait for the user to manually log in.');
-              return Promise.resolve();
-            }
-
-            // We can't handle the truth, just pass on the problem to the
-            // next handler.
-            return Promise.reject(result);
-          });
-      })
-
       .then(() => {
         this.isDoneLoadingSubject$.next(true);
 
-        // Check for the strings 'undefined' and 'null' just to be sure. Our current
-        // login(...) should never have this, but in case someone ever calls
-        // initImplicitFlow(undefined | null) this could happen.
-        if (this.oauthService.state && this.oauthService.state !== 'undefined' && this.oauthService.state !== 'null') {
+        if (this.oauthService.hasValidAccessToken()
+            && this.oauthService.state
+            && this.oauthService.state !== 'undefined'
+            && this.oauthService.state !== 'null') {
           let stateUrl = this.oauthService.state;
           if (stateUrl.startsWith('/') === false) {
             stateUrl = decodeURIComponent(stateUrl);
@@ -172,16 +120,30 @@ export class AuthService {
       })
       .catch((e) => {
         console.error(e);
-        //redirect para erro
         this.isDoneLoadingSubject$.next(true);
-        this.login();
+        return Promise.resolve();
       });
   }
 
-  public login(targetUrl?: string) {
+  public login(targetUrl?: string): Promise<void> {
     // Note: before version 9.1.0 of the library you needed to
     // call encodeURIComponent on the argument to the method.
-    this.oauthService.initLoginFlow(targetUrl || this.router.url);
+    const redirectUrl = targetUrl || this.router.url;
+
+    if (this.hasValidToken()) {
+      this.router.navigateByUrl(redirectUrl);
+      return Promise.resolve();
+    }
+
+    return this.oauthService.initLoginFlowInPopup()
+      .then(() => {
+        if (this.hasValidToken()) {
+          this.router.navigateByUrl(redirectUrl);
+        }
+      })
+      .catch((e) => {
+        console.error(e);
+      });
   }
 
   public logout() { this.oauthService.logOut(); }
