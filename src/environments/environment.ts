@@ -25,7 +25,7 @@ export const authConfig: AuthConfig = {
 export const authModuleConfig: OAuthModuleConfig = {
   resourceServer: {
     allowedUrls: [
-      'http://admin-api.algashop.local:9998/api/v1',
+      'http://api.algashop.local:9999/api/v1',
       'http://auth.algashop.local:8081/api/v1'
     ],
     sendAccessToken: true,
@@ -34,7 +34,7 @@ export const authModuleConfig: OAuthModuleConfig = {
 
 export const environment = {
   production: false,
-  apiUrl: 'http://admin-api.algashop.local:9998', 
+  apiUrl: 'http://api.algashop.local:9999',
   authUrl: 'http://auth.algashop.local:8081',
   showDashboardExtraCards: false,
   authConfig,
