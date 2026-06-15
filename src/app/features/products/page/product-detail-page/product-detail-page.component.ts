@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
@@ -8,6 +9,8 @@ import { ImageModel, ProductModel } from 'src/app/core/models';
 import { ProductsService } from '../../products.service';
 import { firstValueFrom } from 'rxjs';
 import { ProductAddImageFormComponent } from '../../components/product-add-image-form/product-add-image-form.component';
+
+type StockMovementType = 'restock' | 'withdraw';
 
 @Component({
   selector: 'app-product-detail-page',
@@ -29,6 +32,12 @@ export class ProductDetailPageComponent implements OnInit {
   activeIndex: number = 0;
 
   canShowDescription: boolean = false;
+  canShowStockMovementDialog: boolean = false;
+  stockMovementType?: StockMovementType;
+  savingStockMovement = false;
+  stockMovementForm = new FormGroup({
+    quantity: new FormControl<number | null>(null, [Validators.required, Validators.min(1)])
+  });
 
   responsiveOptions: any[] = [
     {
@@ -150,6 +159,71 @@ export class ProductDetailPageComponent implements OnInit {
     this.canShowDescription = true;
   }
 
+  get stockMovementDialogTitle(): string {
+    return this.stockMovementType === 'withdraw' ? 'Remove inventory' : 'Add inventory';
+  }
+
+  showStockMovementDialog(type: StockMovementType) {
+    this.stockMovementType = type;
+    this.stockMovementForm.reset();
+    this.canShowStockMovementDialog = true;
+  }
+
+  cancelStockMovement() {
+    if (this.savingStockMovement) {
+      return;
+    }
+
+    this.canShowStockMovementDialog = false;
+    this.resetStockMovementDialog();
+  }
+
+  confirmStockMovement() {
+    if (this.stockMovementForm.invalid || !this.stockMovementType) {
+      this.stockMovementForm.markAllAsTouched();
+      return;
+    }
+
+    const quantity = Number(this.stockMovementForm.controls.quantity.value);
+    const request = this.stockMovementType === 'withdraw'
+      ? this.productsService.withdraw(this.productId!, quantity)
+      : this.productsService.restock(this.productId!, quantity);
+
+    this.savingStockMovement = true;
+    firstValueFrom(request)
+      .then(() => {
+        this.savingStockMovement = false;
+        this.canShowStockMovementDialog = false;
+        this.resetStockMovementDialog();
+        this.loadProduct();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Inventory updated',
+          life: 3000
+        });
+      })
+      .catch((e: any) => {
+        console.error(e);
+        this.savingStockMovement = false;
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'It was not possible to update the inventory.',
+          life: 3000
+        });
+      });
+  }
+
+  resetStockMovementDialog() {
+    if (this.savingStockMovement) {
+      return;
+    }
+
+    this.stockMovementType = undefined;
+    this.stockMovementForm.reset();
+  }
+
   addNewImage() {
     this.ref = this.dialogService.open(ProductAddImageFormComponent, {
       data: {
@@ -187,6 +261,18 @@ export class ProductDetailPageComponent implements OnInit {
             label: 'Edit',
             command: () => {
               this.edit();
+            }
+          },
+          {
+            label: 'Add inventory',
+            command: () => {
+              this.showStockMovementDialog('restock');
+            }
+          },
+          {
+            label: 'Remove inventory',
+            command: () => {
+              this.showStockMovementDialog('withdraw');
             }
           }
         ]

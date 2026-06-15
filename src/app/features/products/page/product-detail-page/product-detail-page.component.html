@@ -104,6 +104,43 @@
                         {{product?.description}}
                     </p>
                 </p-dialog>
+                <p-dialog [header]="stockMovementDialogTitle" appendTo="body" [(visible)]="canShowStockMovementDialog"
+                        [modal]="true" [style]="{ width: '30vw' }" [draggable]="false" [resizable]="false"
+                        (onHide)="resetStockMovementDialog()">
+                    <form [formGroup]="stockMovementForm" (ngSubmit)="confirmStockMovement()" class="aw-form">
+                        <div class="p-fluid p-formgrid grid">
+                            <div class="field col-12">
+                                <label>Quantity</label>
+                                <p-inputNumber formControlName="quantity" [min]="1" [showButtons]="true"/>
+
+                                <app-validation-message
+                                        [control]="stockMovementForm.get('quantity')"
+                                        error="required"
+                                        text="Quantity is required"/>
+                                <app-validation-message
+                                        [control]="stockMovementForm.get('quantity')"
+                                        error="min"
+                                        text="Quantity must be greater than zero"/>
+                            </div>
+                        </div>
+                        <p-divider></p-divider>
+                        <div style="display: flex;
+                                    align-content: center;
+                                    align-items: center;
+                                    justify-content: flex-end;">
+                            <button pButton type="button"
+                                    style="margin-right: 10px;"
+                                    class="p-button-text"
+                                    label="Cancel"
+                                    [disabled]="savingStockMovement"
+                                    (click)="cancelStockMovement()"></button>
+                            <button pButton type="submit"
+                                    label="Confirm"
+                                    [loading]="savingStockMovement"
+                                    [disabled]="stockMovementForm.invalid || savingStockMovement"></button>
+                        </div>
+                    </form>
+                </p-dialog>
             </div>
             <div class="aw-detail-card-body" *ngIf="loading">
                 <div>
