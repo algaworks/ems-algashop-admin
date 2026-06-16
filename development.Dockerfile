@@ -25,7 +25,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copiar artefatos do build para o diretório do Nginx
-COPY --from=builder /app/dist/oauth2-client-frontend-angular-app/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/admin /usr/share/nginx/html
 
 # Expor porta 80
 EXPOSE 80
