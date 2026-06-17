@@ -118,7 +118,7 @@ export class UserFormComponent implements OnInit {
   private displaySuccessMessage() {
     let message = {
       severity:'success',
-      summary: 'Sucesso',
+      summary: 'Success',
       detail:  this.isEditing() ? 'User updated' : 'User registered',
       boolean: true
     }

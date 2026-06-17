@@ -30,7 +30,7 @@ export class CustomerDetailPageComponent implements OnInit {
   }
 
   private loadData() {
-    this.loading = true;//em caso de refresh
+    this.loading = true; // on page refresh
     sleep()
       .then(()=> {
         this.loadCustomer();

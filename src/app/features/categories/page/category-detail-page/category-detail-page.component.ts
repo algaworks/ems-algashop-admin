@@ -35,7 +35,7 @@ export class CategoryDetailPageComponent implements OnInit {
   }
 
   private loadData() {
-    this.loading = true;//em caso de refresh
+    this.loading = true; // on page refresh
     sleep()
       .then(()=> {
         this.loadCategory();
@@ -45,10 +45,10 @@ export class CategoryDetailPageComponent implements OnInit {
   private setupMenus() {
     this.menuItems = this.menuItems = [
       {
-        label: 'Opções',
+        label: 'Options',
         items: [
           {
-            label: 'Editar',
+            label: 'Edit',
             command: () => {
               this.edit();
             }

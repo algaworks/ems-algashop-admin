@@ -87,7 +87,7 @@ export class CategoryFormComponent implements OnInit {
   }
 
   private parsePatchData(category: CategoryModel) {
-    return category; //todo - caso tenha Enums, é bom usar um parse nesse método
+    return category;
   }
 
   private generateInput() : CategoryInput {

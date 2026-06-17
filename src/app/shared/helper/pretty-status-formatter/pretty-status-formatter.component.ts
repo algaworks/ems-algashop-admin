@@ -9,8 +9,6 @@ export class PrettyStatusFormatterComponent implements OnInit {
 
   @Input() status? : string = '';
 
-  @Input() female? : boolean = false;
-
   formattedStatus : string = '';
 
   constructor() { }
@@ -20,56 +18,56 @@ export class PrettyStatusFormatterComponent implements OnInit {
 
   getStatusColorClass() : string {
     if (this.status == 'ACTIVE') {
-      this.formattedStatus = this.female ? 'Ativa' : 'Ativo';
+      this.formattedStatus = 'Active';
       return 'status-success';
     }
     if (this.status == 'INACTIVE') {
-      this.formattedStatus = this.female ? 'Inativa' : 'Inativo';
+      this.formattedStatus = 'Inactive';
       return 'status-danger';
     }
     if (this.status == 'PENDING_SETUP') {
-      this.formattedStatus = 'Configuração pendente'
+      this.formattedStatus = 'Pending Setup';
       return 'status-warning';
     }
 
     if (this.status == 'PAID') {
-      this.formattedStatus = this.female ? 'Paga' : 'Pago';
+      this.formattedStatus = 'Paid';
       return 'status-success';
     }
     if (this.status == 'PENDING') {
-      this.formattedStatus = 'Pendente'
+      this.formattedStatus = 'Pending';
       return 'status-warning';
     }
     if (this.status == 'PARTIALLY_PAID') {
-      this.formattedStatus = this.female ? 'Parcialmente paga' : 'Parcialmente pago';
+      this.formattedStatus = 'Partially Paid';
       return 'status-warning';
     }
     if (this.status == 'CANCELLED') {
-      this.formattedStatus = this.female ? 'Cancelada' : 'Cancelado';
+      this.formattedStatus = 'Cancelled';
       return 'status-danger';
     }
     if (this.status == 'REFUNDED') {
-      this.formattedStatus = this.female ? 'Reembolsada' : 'Reembolsado'
+      this.formattedStatus = 'Refunded';
       return 'status-danger';
     }
 
     if (this.status == 'ENROLLED') {
-      this.formattedStatus = this.female ? 'Matriculado' : 'Matriculado'
+      this.formattedStatus = 'Enrolled';
       return 'status-success';
-    } 
+    }
 
     if (this.status == 'ISSUED') {
-      this.formattedStatus = this.female ? 'Emitida' : 'Emitido'
+      this.formattedStatus = 'Issued';
       return 'status-success';
-    } 
+    }
 
     if (this.status == 'UNPUBLISHED') {
-      this.formattedStatus = 'Não publicado'
+      this.formattedStatus = 'Unpublished';
       return 'status-warning';
-    } 
+    }
 
     if (this.status == 'PUBLISHED') {
-      this.formattedStatus = 'Publicado'
+      this.formattedStatus = 'Published';
       return 'status-success';
     }
 

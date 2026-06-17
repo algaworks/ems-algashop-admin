@@ -32,7 +32,7 @@ export class UserDetailPageComponent implements OnInit {
   }
 
   private loadData() {
-    this.loading = true;//em caso de refresh
+    this.loading = true; // on page refresh
     sleep()
       .then(()=> {
         this.loadUser();
@@ -42,10 +42,10 @@ export class UserDetailPageComponent implements OnInit {
   private setupMenus() {
     this.menuItems = this.menuItems = [
       {
-        label: 'Opções',
+        label: 'Options',
         items: [
           {
-            label: 'Editar',
+            label: 'Edit',
             command: () => {
               this.edit();
             }
@@ -71,8 +71,8 @@ export class UserDetailPageComponent implements OnInit {
         console.error(e);
         let message = {
             severity:'error',
-            summary: 'Erro de conexão com o servidor',
-            detail: 'Não foi possível recuperar o produto',
+            summary: 'Server connection error',
+            detail: 'Unable to retrieve user',
             boolean: true
         }
         this.messageService.add(message);

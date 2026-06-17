@@ -43,7 +43,7 @@ export class OrderDetailPageComponent implements OnInit {
   }
 
   private loadData() {
-    this.loading = true;//em caso de refresh
+    this.loading = true; // on page refresh
     sleep()
       .then(()=> {
         this.loadOrder();
@@ -53,10 +53,10 @@ export class OrderDetailPageComponent implements OnInit {
   private setupMenus() {
     this.menuItems = this.menuItems = [
       {
-        label: 'Opções',
+        label: 'Options',
         items: [
           {
-            label: 'Editar',
+            label: 'Edit',
             command: () => {
               this.edit();
             }
@@ -84,8 +84,8 @@ export class OrderDetailPageComponent implements OnInit {
         console.error(e);
         let message = {
             severity:'error',
-            summary: 'Erro de conexão com o servidor',
-            detail: 'Não foi possível recuperar o produto',
+            summary: 'Server connection error',
+            detail: 'Unable to retrieve order',
             boolean: true
         }
         this.messageService.add(message);
@@ -109,8 +109,8 @@ export class OrderDetailPageComponent implements OnInit {
         }
         this.messageService.add({
           severity:'error',
-          summary: 'Erro de conexão com o servidor',
-          detail: 'Não foi possível recuperar a invoice'
+          summary: 'Server connection error',
+          detail: 'Unable to retrieve invoice'
         });
       });
   }
