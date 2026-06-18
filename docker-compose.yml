@@ -1,7 +1,8 @@
 version: '3.8'
 
 services:
-  admin-angular-app:
+  admin-angular:
+    image: algashop/algashop-admin:dev
     build:
       context: .
       dockerfile: development.Dockerfile
