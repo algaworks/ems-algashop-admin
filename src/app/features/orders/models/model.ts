@@ -84,12 +84,14 @@ export class OrderFilter {
         params = params.set('status', this.status.value || this.status);
       }
       if(this.placedAtFrom){
-        const formattedDate = new Date(this.placedAtFrom).toISOString().substring(0, 10);
-        params = params.set('placedAtFrom', formattedDate);
+        const startOfDay = new Date(this.placedAtFrom);
+        startOfDay.setHours(0, 0, 0, 0);
+        params = params.set('placedAtFrom', startOfDay.toISOString());
       }
       if(this.placedAtTo){
-        const formattedDate = new Date(this.placedAtTo).toISOString().substring(0, 10);
-        params = params.set('placedAtTo', formattedDate);
+        const endOfDay = new Date(this.placedAtTo);
+        endOfDay.setHours(23, 59, 59, 999);
+        params = params.set('placedAtTo', endOfDay.toISOString());
       }
       if(this.totalAmountFrom){
         params = params.set('totalAmountFrom', this.totalAmountFrom);

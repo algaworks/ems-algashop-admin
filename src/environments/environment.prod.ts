@@ -8,7 +8,7 @@ export const authConfig: AuthConfig = {
 
   clientId: 'algashop-admin-web',
   responseType: 'code',
-  scope: 'openid products:read products:write products:stock:write categories:read categories:write invoices:read orders:read customers:read shopping-carts:read users:read users:write',
+  scope: 'openid products:read products:write products:stock:write categories:read categories:write invoices:read orders:read customers:read shopping-carts:read users:read users:write metrics:read',
   useSilentRefresh: true, // Needed for Code Flow to suggest using iframe-based refreshes
   silentRefreshTimeout: 5000, // For faster testing
   timeoutFactor: 0.25, // For faster testing
@@ -36,7 +36,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://admin-api.algashop.com',
   authUrl: 'http://auth.algashop.com',
-  showDashboardExtraCards: false,
+  showDashboardExtraCards: true,
   authConfig,
   authModuleConfig
 };

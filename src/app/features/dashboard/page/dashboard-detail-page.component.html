@@ -1,11 +1,21 @@
 <div class="grid">
     <ng-container *ngIf="showDashboardExtraCards">
+        <div class="col-12 flex align-items-center justify-content-end gap-2">
+            <label for="period" class="text-500 font-medium">Period</label>
+            <p-calendar inputId="period"
+                        [(ngModel)]="selectedMonth"
+                        view="month"
+                        dateFormat="mm/yy"
+                        [showIcon]="true"
+                        [readonlyInput]="true"
+                        (onSelect)="onMonthChange()" />
+        </div>
         <div class="col-12 lg:col-6 xl:col-3">
             <div class="dashboard-card mb-0">
                 <div class="flex justify-content-between mb-3">
                     <div>
                         <span class="block text-500 font-medium mb-3">Monthly Orders</span>
-                        <div class="text-900 font-medium text-xl">152</div>
+                        <div class="text-900 font-medium text-xl">{{ monthlyOrders }}</div>
                     </div>
                     <div class="flex align-items-center justify-content-center bg-blue-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                         <i class="pi pi-shopping-cart text-blue-500 text-xl"></i>
@@ -18,7 +28,7 @@
                 <div class="flex justify-content-between mb-3">
                     <div>
                         <span class="block text-500 font-medium mb-3">Monthly Revenue</span>
-                        <div class="text-900 font-medium text-xl">$2.100</div>
+                        <div class="text-900 font-medium text-xl">{{ monthlyRevenue | currency: 'USD' }}</div>
                     </div>
                     <div class="flex align-items-center justify-content-center bg-orange-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                         <i class="pi pi-map-marker text-orange-500 text-xl"></i>
@@ -31,7 +41,7 @@
                 <div class="flex justify-content-between mb-3">
                     <div>
                         <span class="block text-500 font-medium mb-3">Customers</span>
-                        <div class="text-900 font-medium text-xl">28441</div>
+                        <div class="text-900 font-medium text-xl">{{ activeCustomers }}</div>
                     </div>
                     <div class="flex align-items-center justify-content-center bg-cyan-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                         <i class="pi pi-inbox text-cyan-500 text-xl"></i>
@@ -44,7 +54,7 @@
                 <div class="flex justify-content-between mb-3">
                     <div>
                         <span class="block text-500 font-medium mb-3">Shopping Carts</span>
-                        <div class="text-900 font-medium text-xl">15</div>
+                        <div class="text-900 font-medium text-xl">{{ activeShoppingCarts }}</div>
                     </div>
                     <div class="flex align-items-center justify-content-center bg-purple-100 border-round" [ngStyle]="{width: '2.5rem', height: '2.5rem'}">
                         <i class="pi pi-comment text-purple-500 text-xl"></i>
@@ -56,23 +66,18 @@
 
     <div class="col-12" [ngClass]="showDashboardExtraCards ? 'xl:col-6' : 'xl:col-12'">
         <div class="dashboard-card">
-            <h3>Recent Sales</h3>
+            <h3>Recent Sales
+                <span *ngIf="showDashboardExtraCards" class="text-500 font-normal"> - {{ selectedMonth | date: 'MMMM yyyy' }}</span>
+            </h3>
             <p-table [value]="orders!"
             styleClass="p-datatable-sm p-dashboard-card"
-            [lazyLoadOnInit]="false"
-            [resizableColumns]="true"
-            columnResizeMode="expand"
-            [lazy]="true"
-            [paginator]="true"
-            [rows]="recordsPerPage"
-            [totalRecords]="totalElements"
             [loading]="loadingOrders">
         <ng-template pTemplate="header">
             <tr>
-                <th pSortableColumn="id">Code<p-sortIcon field="id"></p-sortIcon></th>
-                <th pSortableColumn="totalItems">Total items<p-sortIcon field="totalItems"></p-sortIcon></th>
-                <th pSortableColumn="totalAmount">Total Amount<p-sortIcon field="totalAmount"></p-sortIcon></th>
-                <th pSortableColumn="placedAt">Ordered at<p-sortIcon field="placedAt"></p-sortIcon></th>
+                <th>Code</th>
+                <th>Total items</th>
+                <th>Total Amount</th>
+                <th>Ordered at</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-order>
@@ -87,7 +92,7 @@
                     {{order.totalItems}}
                 </td>
                 <td>
-                    {{order.totalAmount}}
+                    {{ order.totalAmount | currency: 'USD' }}
                 </td>
                 <td>
                     {{order.placedAt | date}}
@@ -97,7 +102,7 @@
         <ng-template pTemplate="emptymessage" let-columns>
             <tr>
                 <td [attr.colspan]="8" style="text-align: center; padding: 1em;">
-                  No results were found for this search.
+                  No sales were found for this period.
                 </td>
             </tr>
         </ng-template>
@@ -109,41 +114,17 @@
                     <h3>Best Monthly Selling Products</h3>
                 </div>
                 <ul class="list-none p-0 m-0">
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
+                    <li *ngFor="let product of topSellingProducts" class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
                         <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">StellarForge D7 AMD Ryzen 9</span>
-                            <div class="mt-1 text-600">Laptops</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 flex align-items-center">
-                            <span class="text-500 ml-3 font-medium">50</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">AuraBook RAM DDR4 4000Mhz</span>
-                            <div class="mt-1 text-600">Hardware</div>
+                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">{{ product.productName }}</span>
+                            <div class="mt-1 text-600">{{ product.categoryName }}</div>
                         </div>
                         <div class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                            <span class="text-500 ml-3 font-medium">43</span>
+                            <span class="text-500 ml-3 font-medium">{{ product.quantity }}</span>
                         </div>
                     </li>
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">HyperNova Pro X11 Intel Core i9, 32GB RAM</span>
-                            <div class="mt-1 text-600">Laptops</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                            <span class="text-500 ml-3 font-medium">32</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-column md:flex-row md:align-items-center md:justify-content-between mb-4">
-                        <div>
-                            <span class="text-900 font-medium mr-2 mb-1 md:mb-0">NebulaLink Desktop M7 Intel Core i7, 16GB RGB RAM</span>
-                            <div class="mt-1 text-600">Desktops</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-8 flex align-items-center">
-                            <span class="text-500 ml-3 font-medium">24</span>
-                        </div>
+                    <li *ngIf="topSellingProducts.length === 0" class="text-600">
+                        No sales in the selected month.
                     </li>
                 </ul>
             </div>
@@ -153,7 +134,7 @@
     <ng-container *ngIf="showDashboardExtraCards">
         <div class="col-12 xl:col-6">
             <div class="dashboard-card">
-                <h3>Sales Overview</h3>
+                <h3>Sales Overview {{ selectedYear }}</h3>
                 <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
             </div>
         </div>
